@@ -9,16 +9,9 @@ import com.badlogic.gdx.math.Polygon;
  * I realized that it will be easier to turn the terrain into entities
  */
 public class Terrain extends BaseEntity {
-    boolean isTouched;
-
     public Terrain(Polygon shape) {
         super(shape);
     }
-
-    public void setTouched(boolean touched){
-        isTouched = touched;
-    }
-
 
     public void dispose() {
 

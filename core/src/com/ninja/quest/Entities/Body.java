@@ -17,15 +17,17 @@ import com.ninja.quest.Constants.Constants;
  * -
  */
 public class Body {
-
     private Vector2 pos = new Vector2();
     private Vector2 speed = new Vector2();
     private Vector2 acceleration = new Vector2();
+    private float width, height;
     private Rectangle bounds = new Rectangle();
     private Polygon shape = new Polygon();
 
     Body(Polygon shape){
         this.shape = shape;
+        width = shape.getBoundingRectangle().width;
+        height = shape.getBoundingRectangle().height;
         bounds = shape.getBoundingRectangle();
         resizeBounds();
     }
@@ -33,7 +35,7 @@ public class Body {
     Body(float[] verts, Vector2 initPos){
         shape.setVertices(verts);
         shape.translate(initPos.x, initPos.y);
-
+        resizeBounds();
     }
 
     private void resizeBounds(){
@@ -41,6 +43,26 @@ public class Body {
         bounds.y -= Constants.PixPerTile;
         bounds.width += 2 * Constants.PixPerTile;
         bounds.height += 2 * Constants.PixPerTile;
+    }
+
+    public void update(Vector2 direction){
+        move(direction);
+        updateBounds();
+
+    }
+
+    public void move(Vector2 direction){
+        pos.add(direction);
+        shape.translate(direction.x, direction.y);
+    }
+
+    protected void updateBounds(){
+        bounds = shape.getBoundingRectangle();
+        resizeBounds();
+    }
+
+    public void setPos(Vector2 position){
+        pos.set(position);
     }
 
     public Rectangle getBounds(){
@@ -54,6 +76,11 @@ public class Body {
     public Polygon getShape(){
         return shape;
     }
+
+    public float getWidth(){return width;}
+    public float getHeight(){return height;}
+
+}
 
 //    public void run(Vector2 direction){
 //
@@ -163,4 +190,3 @@ public class Body {
 
 //    }
 
-}

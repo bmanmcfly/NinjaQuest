@@ -20,7 +20,6 @@ import com.ninja.quest.Camera.myOrthoCam;
 import com.ninja.quest.Constants.Constants;
 import com.ninja.quest.Entities.Ground;
 import com.ninja.quest.Entities.Player;
-import com.ninja.quest.Entities.Player2;
 import com.ninja.quest.Entities.Terrain;
 import com.ninja.quest.NinjaQuest;
 import com.ninja.quest.Utils.Input;
@@ -98,7 +97,7 @@ public class GameScreen implements Screen {
         sr = new ShapeRenderer();
         sr.setColor(Color.TEAL);
         Gdx.gl.glLineWidth(5);
-        collider = new collisionHandler(walkPath);
+        collider = new collisionHandler(/*walkPath*/);
     }
 
     /**
@@ -109,7 +108,7 @@ public class GameScreen implements Screen {
 
     }
 
-    public void UpdateCollisions(float delta){
+//    public void UpdateCollisions(float delta){
 //        int start;
 //        boolean collision = false;
 //        for (Terrain T : terrainPoly){
@@ -152,6 +151,17 @@ public class GameScreen implements Screen {
 //            player2.clearBlocked();
 ////            Gdx.app.log("blocked", "cleared");
 //        }
+//    }
+
+    public void UpdateCollisions(float delta){
+        boolean close;
+        for(Terrain T: terrainPoly) {
+            close = collider.pruneCollisions(player.getBody(), T.getBody());
+            T.setTouched(close);
+            if (close){
+
+            }
+        }
     }
 
     public void update(float delta){
@@ -162,7 +172,7 @@ public class GameScreen implements Screen {
         //Get entity data for the previous position
         time += delta;
         while (time > step && updatesThisFrame < maxUpdatesPerFrame){
-//            player2.update(step);
+            player.update(step);
             UpdateCollisions(step);
             updatesThisFrame++;
             time -= step;
@@ -206,11 +216,17 @@ public class GameScreen implements Screen {
         sr.setProjectionMatrix(cam.combined);
 //        parser.drawDebugLayer(sr);
         sr.begin(ShapeRenderer.ShapeType.Filled);
-        sr.setColor(Color.BLUE);
         for (Terrain T : terrainPoly){
             Rectangle rectangle = T.getBody().getBounds();
+            if (T.getTouched()){
+                sr.setColor(Color.RED);
+            } else {
+                sr.setColor(Color.BLUE);
+            }
             sr.box(rectangle.x, rectangle.y, 0, rectangle.getWidth(),rectangle.getHeight(),0);
         }
+        Rectangle rectangle = player.getBody().getBounds();
+        sr.box(rectangle.x, rectangle.y, 0, rectangle.getWidth(), rectangle.getHeight(), 0);
         sr.end();
         sr.setColor(Color.RED);
         Gdx.gl.glLineWidth(3);
@@ -219,17 +235,17 @@ public class GameScreen implements Screen {
             T.debugDraw(sr);
         sr.polygon(player.getBody().getShape().getTransformedVertices());
         sr.end();
-//        sr.setColor(Color.TEAL);
+        sr.setColor(Color.WHITE);
 //        Gdx.gl.glLineWidth(5);
-//        sr.begin(ShapeRenderer.ShapeType.Point);
+        sr.begin(ShapeRenderer.ShapeType.Point);
 //        sr.setColor(Color.WHITE);
-//        sr.point(player2.getPos().x, player2.getPos().y, 0);
+        sr.point(player.getPos().x, player.getPos().y, 0);
 //        sr.setColor(Color.FOREST);
-//        sr.point(player2.getFoot().x, player2.getFoot().y, 0);
+        sr.point(player.getFoot().x, player.getFoot().y, 0);
 //        sr.setColor(Color.SLATE);
-//        sr.point(player2.getHead().x, player2.getHead().y, 0);
+        sr.point(player.getHead().x, player.getHead().y, 0);
 //        sr.setColor(Color.TEAL);
-//        sr.end();
+        sr.end();
 
     }
 

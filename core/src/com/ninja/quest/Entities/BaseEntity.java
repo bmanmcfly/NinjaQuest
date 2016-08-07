@@ -13,17 +13,13 @@ import com.badlogic.gdx.utils.Disposable;
  * Also hold a sprite, and whether the object is alive or dead
  */
 public abstract class BaseEntity implements Disposable {
-    protected Vector2 pos = new Vector2();
-    protected float width, height;
     protected boolean isAlive;
     protected Sprite sprite = new Sprite();
     protected Body body;
+    protected boolean isTouched = false;
 
     protected BaseEntity(Polygon shape){
         body = new Body(shape);
-        pos.set(shape.getOriginX(), shape.getOriginY());
-        width = body.getBounds().width;
-        height = body.getBounds().height;
     }
 
     public Body getBody() {
@@ -34,19 +30,18 @@ public abstract class BaseEntity implements Disposable {
         sr.polygon(body.getShape().getTransformedVertices());
     }
 
-    public Sprite getSprite() {
+    public Sprite getSprite(){
         return sprite;
     }
 
-    public boolean isAlive() {
+    public boolean isAlive(){
         return isAlive;
     }
 
-    public Vector2 getPos() {
-        return pos;
+    public void setTouched(boolean touched){
+        isTouched = touched;
     }
 
-    public void setPos(Vector2 pos) {
-        this.pos = pos;
-    }
+    public boolean getTouched(){ return isTouched; }
+
 }

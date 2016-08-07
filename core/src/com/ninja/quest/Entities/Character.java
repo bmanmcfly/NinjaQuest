@@ -27,12 +27,12 @@ public abstract class Character extends BaseEntity implements Disposable {
         updateVerts();
     }
 
-    private void updateVerts(){
-        head.set(pos.x + width / 2, pos.y + height);
-        foot.set(pos.x + width / 2, pos.y);
-        rHand.set(pos.x + width, pos.y + height / 2);
-        lHand.set(pos.x, pos.y + height / 2);
-        botRight.set(pos.x + width, pos.y);
+    protected void updateVerts(){
+        head.set(body.getPos().x + body.getWidth() / 2, body.getPos().y + body.getHeight());
+        foot.set(body.getPos().x + body.getWidth() / 2, body.getPos().y);
+        rHand.set(body.getPos().x + body.getWidth(), body.getPos().y + body.getHeight() / 2);
+        lHand.set(body.getPos().x, body.getPos().y + body.getHeight() / 2);
+        botRight.set(body.getPos().x + body.getWidth(), body.getPos().y);
     }
 
 //    protected Constants.airStates airState;

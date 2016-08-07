@@ -21,15 +21,17 @@ public class Player extends Character implements Disposable {
     private Array<Vector2> path = new Array<Vector2>();
     private TextureAtlas.AtlasRegion region;
 
+    private Vector2 direction = new Vector2();
+
     //Controls
-    private boolean moveLeft = false, moveRight = false, jumping = false;
+    private boolean moveLeft = false, moveRight = false, jumping = false, gliding = false;
 
 
     public Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape) {
         super(shape);
         sb = batch;
         this.atlas = atlas;
-        this.pos = initPos;
+        body.setPos(initPos);
         input = new Input();
     }
 
@@ -42,14 +44,21 @@ public class Player extends Character implements Disposable {
         moveLeft = Input.left;// && !blockLeft;
         moveRight = Input.right;// && !blockRight;
         jumping = Input.jump;// && !blockHead;
-//        gliding = Input.jump && airState == FALLING;
+        gliding = Input.climbDown;// && airState == FALLING;
     }
 
     public void update(float dt){
         updateInput();
-
-
+        if (moveLeft) direction.set(-1, 0);
+        if (moveRight) direction.set(1, 0);
+        if (jumping) direction.set(0, 1);
+        if (gliding) direction.set(0, -1);
+        body.update(direction);
     }
+
+    public Vector2 getFoot(){ return foot; }
+    public Vector2 getHead(){ return head; }
+    public Vector2 getPos(){ return body.getPos();}
 
     @Override
     public void dispose() {

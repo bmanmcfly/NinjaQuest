@@ -56,5 +56,9 @@ package com.ninja.quest;
  *
  */
 
+/**
+ * Had to do ALOT of refactoring in order to move along the project...
+ */
+
 public class LogFile {
 }
