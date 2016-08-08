@@ -31,8 +31,8 @@ public class Constants {
     public static final float JUMP_SPEED = 12f * PixPerTile;
     public static final float MAX_JUMP_HEIGHT = 20f * PixPerTile;
     public static final float TOLERANCE = 5f;
-    public static final float RUN_IMPULSE = 40f * PixPerTile;
-    public static final float MAX_RUN_SPEED = 7f * PixPerTile;
+    public static final float RUN_IMPULSE = 15f * PixPerTile;
+    public static final float MAX_RUN_SPEED = 9f * PixPerTile;
     public static final float DAMPING = 0.25f;
 
 

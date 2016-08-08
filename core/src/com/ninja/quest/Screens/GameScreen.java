@@ -15,6 +15,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.ninja.quest.Camera.myOrthoCam;
 import com.ninja.quest.Constants.Constants;
@@ -159,7 +160,10 @@ public class GameScreen implements Screen {
             close = collider.pruneCollisions(player.getBody(), T.getBody());
             T.setTouched(close);
             if (close){
-
+                if (collider.getCollision(player.getBody(), T.getBody())) {
+//                    Gdx.app.log("Collision", "With Terrain");
+                    collider.resolve(player.getBody(), T.getBody());
+                }
             }
         }
     }
@@ -200,18 +204,7 @@ public class GameScreen implements Screen {
         mapRender.setView(cam);
 //        mapRender.render();
 
-        game.getBatch().begin();
-//        Vector3 textPos = new Vector3(10, 10,0);
-//        cam.unproject(textPos);
-//        Vector3 markerPos = new Vector3(10, 10, 0);
-//        cam.unproject(markerPos);
-//        game.markerFont.draw(game.batch, Boolean.toString(player2.airborn) + "\n" +
-//                        "Ground Start : " + cam.position.toString() + "\n Ground End : " + player2.groundEnd.toString() + "\n" +
-//                        "Line Start: " + player2.lineStart.toString() + "Line End: " + player2.lineEnd.toString() + "\n" +
-//                        "Foot :" + player2.foot.toString() + "\n" + " Ground index:" + player2.gndIndex + "  Line number: " + player2.gndLineStart + ", " + player2.gndLineEnd,
-//                markerPos.x, markerPos.y);
-//        player2.draw();
-        game.getBatch().end();
+
 
         sr.setProjectionMatrix(cam.combined);
 //        parser.drawDebugLayer(sr);
@@ -225,28 +218,33 @@ public class GameScreen implements Screen {
             }
             sr.box(rectangle.x, rectangle.y, 0, rectangle.getWidth(),rectangle.getHeight(),0);
         }
+        sr.setColor(Color.FIREBRICK);
         Rectangle rectangle = player.getBody().getBounds();
         sr.box(rectangle.x, rectangle.y, 0, rectangle.getWidth(), rectangle.getHeight(), 0);
         sr.end();
-        sr.setColor(Color.RED);
+        sr.setColor(Color.GOLDENROD);
         Gdx.gl.glLineWidth(3);
         sr.begin(ShapeRenderer.ShapeType.Line);
         for (Terrain T : terrainPoly )
             T.debugDraw(sr);
         sr.polygon(player.getBody().getShape().getTransformedVertices());
         sr.end();
-        sr.setColor(Color.WHITE);
-//        Gdx.gl.glLineWidth(5);
+        sr.setColor(Color.BLACK);
         sr.begin(ShapeRenderer.ShapeType.Point);
-//        sr.setColor(Color.WHITE);
         sr.point(player.getPos().x, player.getPos().y, 0);
-//        sr.setColor(Color.FOREST);
         sr.point(player.getFoot().x, player.getFoot().y, 0);
-//        sr.setColor(Color.SLATE);
         sr.point(player.getHead().x, player.getHead().y, 0);
-//        sr.setColor(Color.TEAL);
         sr.end();
 
+        game.getBatch().begin();
+//        Vector3 textPos = new Vector3(10, 10,0);
+//        cam.unproject(textPos);
+        Vector3 markerPos = new Vector3(10, 10, 0);
+        cam.unproject(markerPos);
+        game.markerFont.draw(game.getBatch(), "FPS: " + Integer.toString(Gdx.graphics.getFramesPerSecond()) +
+                "\nSpeed: " + player.getBody().getSpeed().toString(), markerPos.x, markerPos.y);
+//        player2.draw();
+        game.getBatch().end();
     }
 
     /**

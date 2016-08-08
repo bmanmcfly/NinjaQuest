@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Polygon;
  */
 public class Terrain extends BaseEntity {
     public Terrain(Polygon shape) {
-        super(shape);
+        super(shape, false);
     }
 
     public void dispose() {

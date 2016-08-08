@@ -15,6 +15,11 @@ import com.ninja.quest.Constants.Constants;
  * so, updates,
  */
 public abstract class Character extends BaseEntity implements Disposable {
+
+    //States
+    protected Constants.airStates airState;
+    protected Constants.states state;
+
     //Sensor points
     protected Vector2 head = new Vector2();
     protected Vector2 foot = new Vector2();
@@ -22,8 +27,8 @@ public abstract class Character extends BaseEntity implements Disposable {
     protected Vector2 lHand = new Vector2();
     protected Vector2 botRight = new Vector2();
 
-    protected Character(Polygon shape) {
-        super(shape);
+    protected Character(Polygon shape, boolean canMove) {
+        super(shape, canMove);
         updateVerts();
     }
 
@@ -35,8 +40,7 @@ public abstract class Character extends BaseEntity implements Disposable {
         botRight.set(body.getPos().x + body.getWidth(), body.getPos().y);
     }
 
-//    protected Constants.airStates airState;
-//    protected Constants.states state;
+
 //    protected boolean jumping;
 //    protected float jumpHeight;
 //    protected boolean faceRight;

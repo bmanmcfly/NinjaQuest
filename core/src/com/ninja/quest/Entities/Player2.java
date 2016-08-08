@@ -21,10 +21,10 @@ import static com.ninja.quest.Constants.Constants.airStates.JUMPING;
  *
  * This is the main player class
  */
-public class Player2 extends Character implements Disposable{
+public class Player2 implements Disposable{
 
     public Player2(Polygon shape) {
-        super(shape);
+
     }
 //    private Vector2 botRight = new Vector2(); //bottom Right of the sprite
 //

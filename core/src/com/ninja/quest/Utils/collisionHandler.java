@@ -12,8 +12,13 @@ import com.ninja.quest.Entities.Ground;
 
 public class collisionHandler {
     private static Intersector.MinimumTranslationVector MTD = new Intersector.MinimumTranslationVector();
-
+    private Vector2 speedA, speedB;
+    private Polygon polyA, polyB;
+    private Vector2 correction = new Vector2();
+    private Array<Vector2> polyArray = new Array<Vector2>();
     public collisionHandler(){
+        speedA = new Vector2();
+        speedB = new Vector2();
 
     }
 
@@ -21,7 +26,52 @@ public class collisionHandler {
         return Intersector.overlaps(A.getBounds(), B.getBounds());
     }
 
+    public boolean getCollision(Body A, Body B){
+        speedA = A.getSpeed();
+        speedB = B.getSpeed();
 
+        polyA = A.getShape();
+        polyB = B.getShape();
+
+        polyA.translate(speedA.x, speedA.y);
+        polyB.translate(speedB.x, speedB.y);
+
+        if (Intersector.overlapConvexPolygons(polyA, polyB, MTD)){
+            correction.mulAdd(MTD.normal, MTD.depth);
+            if (speedA.dot(correction) <= 0){ //if this is greater than 0, then we have a bad MTD
+                return true;
+            } else {
+                correction.set(0,0);
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public void resolve(Body A, Body B){
+        if (A.canMove() && B.canMove()){
+            correction.scl(0.5f);
+            A.resolve(correction);
+            B.resolve(correction.scl(-1));
+        }
+        if (A.canMove() && !B.canMove()){
+            A.resolve(correction);
+        }
+    }
+
+    public Array<Vector2> setPolyToVecArray(Polygon polygon){
+        Array<Vector2> polyPoints = new Array<Vector2>();
+        float[] vertices = polygon.getTransformedVertices();
+        int numVertices = polygon.getTransformedVertices().length;
+        polyPoints.clear();
+        for (int i = 0; i < numVertices / 2; i++){
+            float x = vertices[i * 2];
+            float y = vertices[i * 2 + 1];
+            polyPoints.add(new Vector2(x, y));
+        }
+        return polyPoints;
+    }
 
 }
 //    private Vector2 MTV = new Vector2();
@@ -131,18 +181,6 @@ public class collisionHandler {
 //        return nearest;
 //    }
 //
-//    public Array<Vector2> setPolyToVecArray(Polygon polygon){
-//        Array<Vector2> polyPoints = new Array<Vector2>();
-//        float[] vertices = polygon.getTransformedVertices();
-//        int numVertices = polygon.getTransformedVertices().length;
-//        polyPoints.clear();
-//        for (int i = 0; i < numVertices / 2; i++){
-//            float x = vertices[i * 2];
-//            float y = vertices[i * 2 + 1];
-//            polyPoints.add(new Vector2(x, y));
-//        }
-//        return polyPoints;
-//    }
 //
 //    public int prunePath(Array<Vector2> land, Vector2 foot){
 //        for (int i = 0; i < land.size - 1; i ++){

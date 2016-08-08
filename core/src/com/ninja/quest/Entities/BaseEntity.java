@@ -18,8 +18,8 @@ public abstract class BaseEntity implements Disposable {
     protected Body body;
     protected boolean isTouched = false;
 
-    protected BaseEntity(Polygon shape){
-        body = new Body(shape);
+    protected BaseEntity(Polygon shape, boolean canMove){
+        body = new Body(shape, canMove);
     }
 
     public Body getBody() {

@@ -28,7 +28,7 @@ public class Player extends Character implements Disposable {
 
 
     public Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape) {
-        super(shape);
+        super(shape, true);
         sb = batch;
         this.atlas = atlas;
         body.setPos(initPos);
@@ -49,11 +49,12 @@ public class Player extends Character implements Disposable {
 
     public void update(float dt){
         updateInput();
+        direction.set(0,0);
         if (moveLeft) direction.set(-1, 0);
         if (moveRight) direction.set(1, 0);
         if (jumping) direction.set(0, 1);
         if (gliding) direction.set(0, -1);
-        body.update(direction);
+        body.update(dt, direction);
     }
 
     public Vector2 getFoot(){ return foot; }

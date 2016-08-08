@@ -1,8 +1,11 @@
 package com.ninja.quest.Entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.ninja.quest.Constants.Constants;
 
 /**
@@ -18,18 +21,20 @@ import com.ninja.quest.Constants.Constants;
  */
 public class Body {
     private Vector2 pos = new Vector2();
-    private Vector2 speed = new Vector2();
+    private Vector2 speed = new Vector2(0,0);
     private Vector2 acceleration = new Vector2();
     private float width, height;
     private Rectangle bounds = new Rectangle();
     private Polygon shape = new Polygon();
+    private boolean moveable;
 
-    Body(Polygon shape){
+    Body(Polygon shape, boolean canMove){
         this.shape = shape;
         width = shape.getBoundingRectangle().width;
         height = shape.getBoundingRectangle().height;
         bounds = shape.getBoundingRectangle();
         resizeBounds();
+        moveable = canMove;
     }
 
     Body(float[] verts, Vector2 initPos){
@@ -45,15 +50,23 @@ public class Body {
         bounds.height += 2 * Constants.PixPerTile;
     }
 
-    public void update(Vector2 direction){
-        move(direction);
-        updateBounds();
-
+    public void update(float dt, Vector2 direction){
+        if (moveable) {
+            move(dt, direction);
+            updateBounds();
+        }
     }
 
-    public void move(Vector2 direction){
+    public void move(float dt, Vector2 direction){
+        speed.set(direction.scl(Constants.MAX_RUN_SPEED * dt));
+        pos.add(speed);
+        shape.translate(speed.x, speed.y);
+    }
+
+    public void resolve(Vector2 direction){
         pos.add(direction);
         shape.translate(direction.x, direction.y);
+        updateBounds();
     }
 
     protected void updateBounds(){
@@ -73,12 +86,19 @@ public class Body {
         return pos;
     }
 
+    public Vector2 getSpeed(){
+        return speed;
+    }
+
     public Polygon getShape(){
         return shape;
     }
 
-    public float getWidth(){return width;}
-    public float getHeight(){return height;}
+    public float getWidth() { return width; }
+
+    public float getHeight() { return height; }
+
+    public boolean canMove() { return moveable; }
 
 }
 
@@ -177,16 +197,6 @@ public class Body {
 //    public void setAcceleration(Vector2 acceleration) {
 //        this.acceleration = acceleration;
 //    }
-//
-//    public Rectangle getBounds() {
-//        return bounds;
-//    }
-//
-//    public Polygon getShape() {
-//        return shape;
-//    }
-//
-//    public void setShape(Polygon shape){
 
-//    }
+
 
