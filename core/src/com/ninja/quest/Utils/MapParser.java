@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ninja.quest.Constants.Constants;
 import com.ninja.quest.Entities.Ground;
+import com.ninja.quest.Entities.Ladder;
 import com.ninja.quest.Entities.Terrain;
 
 /**
@@ -106,13 +107,12 @@ public class MapParser{
         return ground;
     }
 
-    public Array<Polygon> getLadders(){
-        Array<Polygon> loadLadders = new Array<Polygon>();
+    public Array<Ladder> getLadders(){
+        Array<Ladder> loadLadders = new Array<Ladder>();
         for (MapObject object : map.getLayers().get("Ladders").getObjects()){
             if (object instanceof PolygonMapObject){
                 Polygon transformedPoly = new Polygon(((PolygonMapObject) object).getPolygon().getTransformedVertices());
-
-                loadLadders.add(transformedPoly);
+                loadLadders.add(new Ladder(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY())));
             }
         }
         return loadLadders;
@@ -123,14 +123,14 @@ public class MapParser{
         for (MapObject object : map.getLayers().get("Objects").getObjects()){
             if (object instanceof PolygonMapObject){
                 Polygon transformedPoly = new Polygon(((PolygonMapObject) object).getPolygon().getTransformedVertices());
-                loadPoly.add(new Terrain(transformedPoly));
+                loadPoly.add(new Terrain(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY())));
             }
         }
         for (MapObject object : map.getLayers().get("Platforms").getObjects()) {
             if (object instanceof PolygonMapObject) {
                 Polygon transformedPoly = new Polygon(((PolygonMapObject) object).getPolygon().getTransformedVertices());
 //                GameScreen.tmpTerrain.add(new Terrain(sb, transformedPoly));
-                loadPoly.add(new Terrain(transformedPoly));
+                loadPoly.add(new Terrain(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY())));
             }
         }
         return loadPoly;
@@ -150,14 +150,15 @@ public class MapParser{
 
     public Polygon buildHero(Vector2 position){
         Polygon polygon = new Polygon();
-        float[] verts = {position.x + Constants.PLAYER_WIDTH / 2, position.y,
-                        position.x + Constants.PLAYER_WIDTH, position.y + Constants.PLAYER_HEIGHT * (3f/8f),
-                        position.x + Constants.PLAYER_WIDTH, position.y + Constants.PLAYER_HEIGHT * (5f/8f),
-                        position.x + Constants.PLAYER_WIDTH * (5f/8f), position.y + Constants.PLAYER_HEIGHT,
-                        position.x + Constants.PLAYER_WIDTH * (3f/8f), position.y + Constants.PLAYER_HEIGHT,
-                        position.x, position.y + Constants.PLAYER_HEIGHT * (5f/8f),
-                        position.x, position.y + Constants.PLAYER_HEIGHT * (3f/8f)};
+        float[] verts = {Constants.PLAYER_WIDTH / 2, 0,
+                        Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT * (3f/8f),
+                        Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT * (5f/8f),
+                        Constants.PLAYER_WIDTH * (5f/8f), Constants.PLAYER_HEIGHT,
+                        Constants.PLAYER_WIDTH * (3f/8f), Constants.PLAYER_HEIGHT,
+                        0, Constants.PLAYER_HEIGHT * (5f/8f),
+                        0, Constants.PLAYER_HEIGHT * (3f/8f)};
         polygon.setVertices(verts);
+        polygon.translate(position.x, position.y);
         return polygon;
     }
 

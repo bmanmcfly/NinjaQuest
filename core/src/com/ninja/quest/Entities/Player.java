@@ -17,7 +17,6 @@ import com.ninja.quest.Utils.Input;
 public class Player extends Character implements Disposable {
     private SpriteBatch sb;
     private TextureAtlas atlas;
-    private Input input;
     private Array<Vector2> path = new Array<Vector2>();
     private TextureAtlas.AtlasRegion region;
 
@@ -27,12 +26,13 @@ public class Player extends Character implements Disposable {
     private boolean moveLeft = false, moveRight = false, jumping = false, gliding = false;
 
 
-    public Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape) {
-        super(shape, true);
+    public Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape, Input input) {
+        super(shape, initPos);
+//        shape.translate();
         sb = batch;
         this.atlas = atlas;
-        body.setPos(initPos);
-        input = new Input();
+        entityIs = Constants.PLAYER;
+        collidesWith = Constants.ENEMY | Constants.E_BULLET | Constants.LADDER | Constants.SENSOR;
     }
 
 //        TextureAtlas.AtlasRegion region = atlas.findRegion("Idle_",0);
@@ -47,19 +47,21 @@ public class Player extends Character implements Disposable {
         gliding = Input.climbDown;// && airState == FALLING;
     }
 
-    public void update(float dt){
+    @Override
+    public void update(float dt, Array<BaseEntity> entities){
         updateInput();
         direction.set(0,0);
         if (moveLeft) direction.set(-1, 0);
         if (moveRight) direction.set(1, 0);
         if (jumping) direction.set(0, 1);
         if (gliding) direction.set(0, -1);
-        body.update(dt, direction);
+
+//        body.update(dt, direction);
     }
 
-    public Vector2 getFoot(){ return foot; }
-    public Vector2 getHead(){ return head; }
-    public Vector2 getPos(){ return body.getPos();}
+//    public Vector2 getFoot(){ return foot; }
+//    public Vector2 getHead(){ return head; }
+//    public Vector2 getPos(){ return pos;}
 
     @Override
     public void dispose() {

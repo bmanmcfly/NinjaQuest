@@ -27,17 +27,17 @@ public abstract class Character extends BaseEntity implements Disposable {
     protected Vector2 lHand = new Vector2();
     protected Vector2 botRight = new Vector2();
 
-    protected Character(Polygon shape, boolean canMove) {
-        super(shape, canMove);
+    protected Character(Polygon shape, Vector2 initPos) {
+        super(shape, initPos);
         updateVerts();
     }
 
     protected void updateVerts(){
-        head.set(body.getPos().x + body.getWidth() / 2, body.getPos().y + body.getHeight());
-        foot.set(body.getPos().x + body.getWidth() / 2, body.getPos().y);
-        rHand.set(body.getPos().x + body.getWidth(), body.getPos().y + body.getHeight() / 2);
-        lHand.set(body.getPos().x, body.getPos().y + body.getHeight() / 2);
-        botRight.set(body.getPos().x + body.getWidth(), body.getPos().y);
+        head.set(pos.x + shape.getBoundingRectangle().width / 2, pos.y + shape.getBoundingRectangle().getHeight());
+        foot.set(pos.x + shape.getBoundingRectangle().width / 2, pos.y);
+        rHand.set(pos.x + shape.getBoundingRectangle().width, pos.y + shape.getBoundingRectangle().height / 2);
+        lHand.set(pos.x, pos.y + shape.getBoundingRectangle().height / 2);
+        botRight.set(pos.x + shape.getBoundingRectangle().width, pos.y);
     }
 
 

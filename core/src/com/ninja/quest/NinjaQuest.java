@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import com.badlogic.gdx.math.Vector2;
 import com.ninja.quest.Constants.Constants;
 //import com.ninja.quest.Fonts.Fonts;
 
@@ -28,12 +27,9 @@ public class NinjaQuest extends Game {
 	@Override
 	public void create () {
 		FreetypeFontLoader.FreeTypeFontLoaderParameter param, parameters;
-//		FreeTypeFontGenerator.FreeTypeFontParameter params, parameter;
 		param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
 		parameters = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
 
-//		params = new FreeTypeFontGenerator.FreeTypeFontParameter();
-//		parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		batch = new SpriteBatch();
 		assets = new AssetManager();
 
@@ -41,8 +37,6 @@ public class NinjaQuest extends Game {
 
 		assets.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
 		assets.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
-
-//		assets.setLoader(BitmapFont.class, new FreetypeFontLoader(new InternalFileHandleResolver()));
 
 		param.fontFileName = "fonts/DJGROSS.ttf";
 		param.fontParameters.size = (int)Math.ceil(Gdx.graphics.getHeight() / 30);
@@ -53,15 +47,6 @@ public class NinjaQuest extends Game {
 		assets.finishLoading();
 		djFont = assets.get("djFont.ttf");
 
-		//Load the fonts here, can use this method to create any other fonts sizes etc here
-//		loadFont.fontGenerator("fonts/DJGROSS.ttf");
-//		params.characters = Constants.FONT_CHARACTERS;
-//		params.size = (int)Math.ceil(Gdx.graphics.getHeight() / 30);
-//		params.borderWidth = 1.5f;
-//		params.magFilter = Texture.TextureFilter.Nearest;
-//		assets.load("fonts/DJGROSS.ttf", FreeTypeFontGenerator.class, );
-//		djFont = loadFont.create(params);
-
 		parameters.fontFileName = "fonts/PermanentMarker.ttf";
 		parameters.fontParameters.characters = Constants.FONT_CHARACTERS;
 		parameters.fontParameters.borderWidth = 1.5f;
@@ -69,12 +54,6 @@ public class NinjaQuest extends Game {
 		assets.load("PermanentMarker.ttf", BitmapFont.class, parameters);
 		assets.finishLoading();
 		markerFont = assets.get("PermanentMarker.ttf");
-
-//		loadFont.fontGenerator("fonts/PermanentMarker.ttf");
-//		parameter.characters = Constants.FONT_CHARACTERS;
-//		parameter.borderWidth = 1.5f;
-//		parameter.size = (int)Math.ceil(Gdx.graphics.getHeight() / 30);
-//		markerFont = loadFont.create(parameter);
 
 		this.setScreen(new com.ninja.quest.Screens.GameScreen(this));
 	}

@@ -1,5 +1,7 @@
 package com.ninja.quest.Entities;
 
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -18,14 +20,14 @@ import com.badlogic.gdx.utils.Disposable;
  * If the player reaches the top of the ladder, or the bottom, set the walk path to the one at the top of the ladder, and treat the
  * player as grounded.
  */
-public class Ladder implements Disposable {
+public class Ladder extends BaseEntity implements Disposable {
     @Override
     public void dispose() {
 
     }
-//    public Ladder(SpriteBatch batch) {
-//        super(batch);
-//    }
+    public Ladder(Polygon shape, Vector2 initPos) {
+        super(shape, initPos);
+    }
 //
 //    @Override
 //    public void update(float dt) {

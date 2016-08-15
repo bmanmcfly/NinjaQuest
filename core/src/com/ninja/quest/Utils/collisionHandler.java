@@ -1,14 +1,11 @@
 package com.ninja.quest.Utils;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.ninja.quest.Constants.Constants;
-import com.ninja.quest.Entities.Body;
-import com.ninja.quest.Entities.Ground;
+
+//import com.ninja.quest.Entities.Body;
 
 public class collisionHandler {
     private static Intersector.MinimumTranslationVector MTD = new Intersector.MinimumTranslationVector();
@@ -22,43 +19,43 @@ public class collisionHandler {
 
     }
 
-    public boolean pruneCollisions(Body A, Body B){
-        return Intersector.overlaps(A.getBounds(), B.getBounds());
-    }
+//    public boolean pruneCollisions(Body A, Body B){
+//        return Intersector.overlaps(A.getBounds(), B.getBounds());
+//    }
 
-    public boolean getCollision(Body A, Body B){
-        speedA = A.getSpeed();
-        speedB = B.getSpeed();
-
-        polyA = A.getShape();
-        polyB = B.getShape();
-
-        polyA.translate(speedA.x, speedA.y);
-        polyB.translate(speedB.x, speedB.y);
-
-        if (Intersector.overlapConvexPolygons(polyA, polyB, MTD)){
-            correction.mulAdd(MTD.normal, MTD.depth);
-            if (speedA.dot(correction) <= 0){ //if this is greater than 0, then we have a bad MTD
-                return true;
-            } else {
-                correction.set(0,0);
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    public void resolve(Body A, Body B){
-        if (A.canMove() && B.canMove()){
-            correction.scl(0.5f);
-            A.resolve(correction);
-            B.resolve(correction.scl(-1));
-        }
-        if (A.canMove() && !B.canMove()){
-            A.resolve(correction);
-        }
-    }
+//    public boolean getCollision(Body A, Body B){
+//        speedA = A.getSpeed();
+//        speedB = B.getSpeed();
+//
+//        polyA = A.getShape();
+//        polyB = B.getShape();
+//
+//        polyA.translate(speedA.x, speedA.y);
+//        polyB.translate(speedB.x, speedB.y);
+//
+//        if (Intersector.overlapConvexPolygons(polyA, polyB, MTD)){
+//            correction.mulAdd(MTD.normal, MTD.depth);
+//            if (speedA.dot(correction) <= 0){ //if this is greater than 0, then we have a bad MTD
+//                return true;
+//            } else {
+//                correction.set(0,0);
+//                return true;
+//            }
+//
+//        }
+//        return false;
+//    }
+//
+//    public void resolve(Body A, Body B){
+//        if (A.canMove() && B.canMove()){
+//            correction.scl(0.5f);
+//            A.resolve(correction);
+//            B.resolve(correction.scl(-1));
+//        }
+//        if (A.canMove() && !B.canMove()){
+//            A.resolve(correction);
+//        }
+//    }
 
     public Array<Vector2> setPolyToVecArray(Polygon polygon){
         Array<Vector2> polyPoints = new Array<Vector2>();

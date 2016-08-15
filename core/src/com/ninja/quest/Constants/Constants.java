@@ -45,4 +45,15 @@ public class Constants {
         JUMPING, FALLING, GLIDING, GROUNDED
     }
 
+    //The collision type will be set at the creation of an object and will help sort how
+    //collisions will be handled or ignored.
+    public static final short PLAYER = 1;
+    public static final short TERRAIN = 2;
+    public static final short ENEMY = 4;
+    public static final short P_BULLET = 8;
+    public static final short E_BULLET = 16;
+    public static final short LADDER = 32;
+    public static final short SENSOR = 64;
+    public static final short ALL = 128;
+
 }
