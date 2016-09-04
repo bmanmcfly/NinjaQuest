@@ -72,8 +72,7 @@ public class GameScreen implements Screen {
         map = game.assets.get("Maps/testMap.tmx");
         parser = new MapParser(map, game.getBatch());
 
-        //Load collision geometry
-        world = new World(parser, input);
+        world = new World(parser);
         world.init(game.getBatch(), atlas);
         mapRender = new OrthogonalTiledMapRenderer(map, game.getBatch());
 
@@ -150,18 +149,19 @@ public class GameScreen implements Screen {
 //    }
 
     public void update(float delta){
-        int updatesThisFrame = 0;
+//        int updatesThisFrame = 0;
         if (delta >= 0.25f){
             delta = 0.25f;
         }
         //Get entity data for the previous position
         time += delta;
-        while (time > step && updatesThisFrame < maxUpdatesPerFrame){
+        while (time > step /*&& updatesThisFrame < maxUpdatesPerFrame*/){
             world.update(step);
-            updatesThisFrame++;
+//            updatesThisFrame++;
             time -= step;
         }
-        interpolation = time / step; //This is the % between the previous frame and the next frame
+        world.update(time);
+//        interpolation = time / step; //This is the % between the previous frame and the next frame
 //        player2.interpolate(time);
 //        Gdx.app.log("Updates" + Integer.toString(updatesThisFrame),"interpolation" + Float.toString(interpolation));
         cam.displacement(world.getPlayer().getPos().x, world.getPlayer().getPos().y, map);
@@ -184,7 +184,7 @@ public class GameScreen implements Screen {
         mapRender.setView(cam);
         sr.setProjectionMatrix(cam.combined);
 
-        world.drawBounds(sr);
+//        world.drawBounds(sr);
 
         world.debugRender(sr);
 

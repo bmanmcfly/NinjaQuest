@@ -26,13 +26,13 @@ public class Constants {
     public static final float PLAYER_HEIGHT = 1.8f * (float)PixPerTile;
 
     //physics constants
-    public static final float gravity = 13f * PixPerTile; //frames per second
+    public static final float gravity = 10f * PixPerTile; //frames per second
     public static final float MAX_FALL_SPEED = 15f * PixPerTile; //frames per second
     public static final float JUMP_SPEED = 12f * PixPerTile;
     public static final float MAX_JUMP_HEIGHT = 20f * PixPerTile;
-    public static final float TOLERANCE = 5f;
-    public static final float RUN_IMPULSE = 15f * PixPerTile;
-    public static final float MAX_RUN_SPEED = 9f * PixPerTile;
+    public static final float TOLERANCE = 2f;
+    public static final float RUN_IMPULSE = 1f * PixPerTile;
+    public static final float MAX_RUN_SPEED = 2f * PixPerTile;
     public static final float DAMPING = 0.25f;
 
 
@@ -47,6 +47,7 @@ public class Constants {
 
     //The collision type will be set at the creation of an object and will help sort how
     //collisions will be handled or ignored.
+    public static final short NONE = 0;
     public static final short PLAYER = 1;
     public static final short TERRAIN = 2;
     public static final short ENEMY = 4;

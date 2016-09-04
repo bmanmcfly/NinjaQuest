@@ -10,8 +10,8 @@ import com.ninja.quest.Constants.Constants;
  * I realized that it will be easier to turn the terrain into entities
  */
 public class Terrain extends BaseEntity {
-    public Terrain(Polygon shape, Vector2 initPos) {
-        super(shape, initPos);
+    public Terrain(Polygon shape, Vector2 initPos, World world) {
+        super(shape, initPos, world);
         entityIs = Constants.TERRAIN;
         collidesWith = Constants.ALL;
     }

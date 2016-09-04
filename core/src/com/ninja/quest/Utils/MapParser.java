@@ -13,6 +13,7 @@ import com.ninja.quest.Constants.Constants;
 import com.ninja.quest.Entities.Ground;
 import com.ninja.quest.Entities.Ladder;
 import com.ninja.quest.Entities.Terrain;
+import com.ninja.quest.Entities.World;
 
 /**
  * Created by Bman on 27/02/2016.
@@ -79,7 +80,7 @@ public class MapParser{
     }
 
 
-    public Array<Ground> getGround(){
+    public Array<Ground> getGround(World world){
         Array<Ground> ground = new Array<Ground>();
         float[] lines;
         Array<Vector2> vertices;
@@ -91,7 +92,7 @@ public class MapParser{
                 for (int i=0 ; i < lines.length / 2;i++){
                     vertices.add(new Vector2(lines[i * 2], lines[i * 2 + 1]));
                 }
-                ground.add(new Ground(vertices, lines));
+                ground.add(new Ground(vertices, lines, world));
             }
         }
         for (MapObject object: map.getLayers().get("PlatformGround").getObjects()){
@@ -101,36 +102,36 @@ public class MapParser{
                 for (int i=0 ; i < lines.length / 2;i++){
                     vertices.add(new Vector2(lines[i * 2], lines[i * 2 + 1]));
                 }
-                ground.add(new Ground(vertices, lines));
+                ground.add(new Ground(vertices, lines, world));
             }
         }
         return ground;
     }
 
-    public Array<Ladder> getLadders(){
+    public Array<Ladder> getLadders(World world){
         Array<Ladder> loadLadders = new Array<Ladder>();
         for (MapObject object : map.getLayers().get("Ladders").getObjects()){
             if (object instanceof PolygonMapObject){
                 Polygon transformedPoly = new Polygon(((PolygonMapObject) object).getPolygon().getTransformedVertices());
-                loadLadders.add(new Ladder(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY())));
+                loadLadders.add(new Ladder(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY()), world));
             }
         }
         return loadLadders;
     }
 
-    public Array<Terrain> collisionPolys() {
+    public Array<Terrain> collisionPolys(World world) {
         Array<Terrain> loadPoly = new Array<Terrain>();
         for (MapObject object : map.getLayers().get("Objects").getObjects()){
             if (object instanceof PolygonMapObject){
                 Polygon transformedPoly = new Polygon(((PolygonMapObject) object).getPolygon().getTransformedVertices());
-                loadPoly.add(new Terrain(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY())));
+                loadPoly.add(new Terrain(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY()), world));
             }
         }
         for (MapObject object : map.getLayers().get("Platforms").getObjects()) {
             if (object instanceof PolygonMapObject) {
                 Polygon transformedPoly = new Polygon(((PolygonMapObject) object).getPolygon().getTransformedVertices());
 //                GameScreen.tmpTerrain.add(new Terrain(sb, transformedPoly));
-                loadPoly.add(new Terrain(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY())));
+                loadPoly.add(new Terrain(transformedPoly, new Vector2(transformedPoly.getX(), transformedPoly.getY()), world));
             }
         }
         return loadPoly;

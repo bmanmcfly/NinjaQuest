@@ -1,7 +1,10 @@
 package com.ninja.quest.Entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.ninja.quest.Constants.Constants;
 
@@ -16,6 +19,13 @@ import com.ninja.quest.Constants.Constants;
  */
 public abstract class Character extends BaseEntity implements Disposable {
 
+    protected Array<Vector2> walkPath = new Array<Vector2>();
+    protected int lineIndex;
+    protected Vector2 lineStart = new Vector2();
+    protected Vector2 lineEnd = new Vector2();
+    protected Vector2 groundStart = new Vector2();
+    protected Vector2 groundEnd = new Vector2();
+
     //States
     protected Constants.airStates airState;
     protected Constants.states state;
@@ -27,8 +37,9 @@ public abstract class Character extends BaseEntity implements Disposable {
     protected Vector2 lHand = new Vector2();
     protected Vector2 botRight = new Vector2();
 
-    protected Character(Polygon shape, Vector2 initPos) {
-        super(shape, initPos);
+    protected Character(Polygon shape, Vector2 initPos, World world) {
+        super(shape, initPos, world);
+        walkPath = null;
         updateVerts();
     }
 
@@ -40,6 +51,51 @@ public abstract class Character extends BaseEntity implements Disposable {
         botRight.set(pos.x + shape.getBoundingRectangle().width, pos.y);
     }
 
+    @Override
+    public void update(float delta, Array<BaseEntity> entities){
+        super.update(delta, entities);
+        updateVerts();
+    }
+
+    public int getGround(){
+        Array<Ground> ground = world.getGround();
+        Array<Vector2> sections;
+        if (walkPath == null) {
+            for (int j = 0; j < ground.size; j++) {
+                sections = ground.get(j).getWalkPath();
+                if (foot.x < sections.first().x) continue;
+                if (foot.x > sections.get(sections.size - 1).x) continue;
+                Gdx.app.log("Foot", "between ground" + j);
+                for (int i = 0; i < sections.size - 1; i++) {
+                    Vector2 p1 = sections.get(i);
+                    Vector2 p2 = sections.get(i + 1);
+                    if (p1.x < foot.x && foot.x < p2.x) {
+                        Gdx.app.log("Testing", p1.toString() +", "+ foot.toString() + ", "+ p2.toString());
+                        if (Intersector.distanceSegmentPoint(p1, p2, foot) < Constants.TOLERANCE) {
+                            Gdx.app.log("Found", p1.toString() + ", " + p2.toString() + ", " + foot.toString());
+                            walkPath = sections;
+                            groundStart = walkPath.first();
+                            groundEnd = walkPath.get(walkPath.size - 1);
+                            lineStart = p1;
+                            lineEnd = p2;
+                            return i;
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public void setDirection(){
+        Vector2 temp = walkPath.get(lineIndex + 1).cpy();
+        direction = temp.sub(walkPath.get(lineIndex).cpy());
+        direction.nor();
+//        foot.set(Intersector.nearestSegmentPoint(path.get(gndLineStart), path.get(gndLineEnd), foot, nearest));
+//        Gdx.app.log("pos before", pos.toString());
+//        body.setPos(new Vector2(foot.x - image.getWidth() / 2, foot.y));
+//        Gdx.app.log("pos after", pos.toString());
+    }
 
 //    protected boolean jumping;
 //    protected float jumpHeight;

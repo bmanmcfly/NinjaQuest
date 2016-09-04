@@ -1,6 +1,5 @@
 package com.ninja.quest.Entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -9,7 +8,6 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ninja.quest.Constants.Constants;
-import com.ninja.quest.Utils.Input;
 import com.ninja.quest.Utils.MapParser;
 
 /**
@@ -38,31 +36,29 @@ public class World {
     private Array<Ladder> ladders = new Array<Ladder>();
     private Player player;
 
-    MapParser mp;
-    Input input;
+    private MapParser mp;
 
-    public World(MapParser parser, Input input){
+    public World(MapParser parser){
         mp = parser;
-        this.input = input;
     }
 
     public void init(SpriteBatch batch, TextureAtlas atlas){
 
-        terrainPoly = mp.collisionPolys();
+        terrainPoly = mp.collisionPolys(this);
         for (BaseEntity e: terrainPoly){
-            Gdx.app.log("Terrain added", "");
+//            Gdx.app.log("Terrain added", "");
             add(e);
         }
-        ladders = mp.getLadders();
+        ladders = mp.getLadders(this);
         for (BaseEntity e: ladders){
-            Gdx.app.log("Terrain added", "");
+//            Gdx.app.log("Terrain added", "");
             add(e);
         }
-        walkPath = mp.getGround();
+        walkPath = mp.getGround(this);
 
         Vector2 position = mp.heroSpawn();
         Polygon polygon = mp.buildHero(position);
-        player = new Player(batch, atlas, position, polygon, input);
+        player = new Player(batch, atlas, position, polygon, this);
         entityArray.add(player);
     }
 
@@ -98,9 +94,6 @@ public class World {
         sr.begin(ShapeRenderer.ShapeType.Line);
         sr.setColor(Color.GOLDENROD);
         for (BaseEntity b: entityArray){
-            if(b.entityIs == Constants.PLAYER) {
-                Gdx.app.log("Debug draw", "Player");
-            }
             b.debugDraw(sr);
         }
         sr.end();
@@ -109,15 +102,17 @@ public class World {
     public void drawBounds(ShapeRenderer sr){
         sr.begin(ShapeRenderer.ShapeType.Filled);
         for(BaseEntity b: entityArray){
-            if (b.entityIs != Constants.PLAYER) {
                 b.boundsDraw(sr);
-            }
         }
         sr.end();
     }
 
     public Player getPlayer(){
         return player;
+    }
+
+    public Array<Ground> getGround(){
+        return walkPath;
     }
 
     public void dispose(){

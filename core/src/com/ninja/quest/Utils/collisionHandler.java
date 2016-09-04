@@ -47,28 +47,17 @@ public class collisionHandler {
 //    }
 //
 //    public void resolve(Body A, Body B){
-//        if (A.canMove() && B.canMove()){
+//        if (A.collides() && B.collides()){
 //            correction.scl(0.5f);
 //            A.resolve(correction);
 //            B.resolve(correction.scl(-1));
 //        }
-//        if (A.canMove() && !B.canMove()){
+//        if (A.collides() && !B.collides()){
 //            A.resolve(correction);
 //        }
 //    }
 
-    public Array<Vector2> setPolyToVecArray(Polygon polygon){
-        Array<Vector2> polyPoints = new Array<Vector2>();
-        float[] vertices = polygon.getTransformedVertices();
-        int numVertices = polygon.getTransformedVertices().length;
-        polyPoints.clear();
-        for (int i = 0; i < numVertices / 2; i++){
-            float x = vertices[i * 2];
-            float y = vertices[i * 2 + 1];
-            polyPoints.add(new Vector2(x, y));
-        }
-        return polyPoints;
-    }
+
 
 }
 //    private Vector2 MTV = new Vector2();

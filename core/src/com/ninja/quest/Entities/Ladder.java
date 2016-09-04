@@ -25,8 +25,8 @@ public class Ladder extends BaseEntity implements Disposable {
     public void dispose() {
 
     }
-    public Ladder(Polygon shape, Vector2 initPos) {
-        super(shape, initPos);
+    public Ladder(Polygon shape, Vector2 initPos, World world) {
+        super(shape, initPos, world);
     }
 //
 //    @Override

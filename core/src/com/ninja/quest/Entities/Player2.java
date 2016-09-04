@@ -1,20 +1,7 @@
 package com.ninja.quest.Entities;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import com.ninja.quest.Constants.Constants;
-import com.ninja.quest.Utils.Input;
-
-import static com.ninja.quest.Constants.Constants.airStates.FALLING;
-import static com.ninja.quest.Constants.Constants.airStates.GLIDING;
-import static com.ninja.quest.Constants.Constants.airStates.GROUNDED;
-import static com.ninja.quest.Constants.Constants.airStates.JUMPING;
 
 /**
  * Created by Bman on 27/02/2016.
@@ -30,6 +17,8 @@ public class Player2 implements Disposable{
 //
 //    private Vector2 lineStart = new Vector2();
 //    private Vector2 lineEnd = new Vector2();
+    ////    private Vector2 groundStart = new Vector2();
+////    private Vector2 groundEnd = new Vector2();
 //    private Vector2 nearest = new Vector2();
 //
 //    private int gndLineStart, gndLineEnd;

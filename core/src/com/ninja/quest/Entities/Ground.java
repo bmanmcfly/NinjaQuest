@@ -1,7 +1,5 @@
 package com.ninja.quest.Entities;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -20,11 +18,10 @@ public class Ground{
     private Vector2 pos = new Vector2();
 //    private Vector2 speed = new Vector2();
 
-    public Ground(Array<Vector2> lines, float[] list){
+    public Ground(Array<Vector2> lines, float[] list, World world){
         points.addAll(lines);
         pos.set(points.first());
         verts = list;
-//        speed.set(new Vector2(0,0));
     }
 
     public Array<Vector2> getWalkPath(){
