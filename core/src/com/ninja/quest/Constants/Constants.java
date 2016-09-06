@@ -27,12 +27,12 @@ public class Constants {
 
     //physics constants
     public static final float gravity = 10f * PixPerTile; //frames per second
-    public static final float MAX_FALL_SPEED = 15f * PixPerTile; //frames per second
+    public static final float MAX_FALL_SPEED = 10f * PixPerTile; //frames per second
     public static final float JUMP_SPEED = 12f * PixPerTile;
     public static final float MAX_JUMP_HEIGHT = 20f * PixPerTile;
     public static final float TOLERANCE = 2f;
     public static final float RUN_IMPULSE = 1f * PixPerTile;
-    public static final float MAX_RUN_SPEED = 2f * PixPerTile;
+    public static final float MAX_RUN_SPEED = (2f * PixPerTile) / 60; //2 tiles * 60 fps forced
     public static final float DAMPING = 0.25f;
 
 

@@ -70,9 +70,9 @@ public abstract class Character extends BaseEntity implements Disposable {
                     Vector2 p1 = sections.get(i);
                     Vector2 p2 = sections.get(i + 1);
                     if (p1.x < foot.x && foot.x < p2.x) {
-                        Gdx.app.log("Testing", p1.toString() +", "+ foot.toString() + ", "+ p2.toString());
+                        Gdx.app.log("Testing; p1", p1.toString() +", foot:"+ foot.toString() + ", p2"+ p2.toString());
                         if (Intersector.distanceSegmentPoint(p1, p2, foot) < Constants.TOLERANCE) {
-                            Gdx.app.log("Found", p1.toString() + ", " + p2.toString() + ", " + foot.toString());
+                            Gdx.app.log("Found p1", p1.toString() + ", foot:" + foot.toString() + ", p2" + p2.toString());
                             walkPath = sections;
                             groundStart = walkPath.first();
                             groundEnd = walkPath.get(walkPath.size - 1);
@@ -87,14 +87,69 @@ public abstract class Character extends BaseEntity implements Disposable {
         return -1;
     }
 
-    public void setDirection(){
-        Vector2 temp = walkPath.get(lineIndex + 1).cpy();
-        direction = temp.sub(walkPath.get(lineIndex).cpy());
-        direction.nor();
+
+    public void verifyDirection(){
+        setDirection();
+        if (needPrevLine() && !isGroundEdge()){
+//            Gdx.app.log("Need prev line", "");
+            getPrevLine();
+        }
+        if (needNextLine() && !isGroundEdge()){
+//            Gdx.app.log("Need next line", "");
+            getNextLine();
+        }
+        if (isGroundEdge()){
+            walkOffEdge();
+        }
+
+    }
+
+    public boolean needPrevLine(){
+        return (foot.x < lineStart.x) && speed.x <= 0f;
+    }
+
+    public boolean needNextLine(){
+        return foot.x > lineEnd.x && speed.x >= 0f;
+    }
+
+    public void getPrevLine(){
+        if (lineStart != groundStart) {
+            groundEnd = groundStart;
+            lineIndex--;
+            setDirection();
+        }
+    }
+
+    public void getNextLine(){
+        if (lineIndex + 1 <= walkPath.size - 2) {
+            groundStart = groundEnd;
+            lineIndex++;
+            setDirection();
+        }
+    }
+
+    public boolean isGroundEdge(){
+        return ((walkPath.get(walkPath.size - 1).x < pos.x) || (walkPath.first().x >= botRight.x));
+    }
+
+    private void walkOffEdge(){
+        walkPath = null;
+        airState = Constants.airStates.FALLING;
+    }
+
+    public Vector2 setDirection(){
+        if (walkPath != null) {
+            Vector2 temp = walkPath.get(lineIndex + 1).cpy();
+            direction = temp.sub(walkPath.get(lineIndex).cpy());
+            direction.nor();
+        } else {
+            direction.set(1,0);
+        }
 //        foot.set(Intersector.nearestSegmentPoint(path.get(gndLineStart), path.get(gndLineEnd), foot, nearest));
 //        Gdx.app.log("pos before", pos.toString());
 //        body.setPos(new Vector2(foot.x - image.getWidth() / 2, foot.y));
 //        Gdx.app.log("pos after", pos.toString());
+        return direction;
     }
 
 //    protected boolean jumping;

@@ -100,7 +100,8 @@ public class World {
     }
 
     public void drawBounds(ShapeRenderer sr){
-        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.setColor(Color.BLUE);
         for(BaseEntity b: entityArray){
                 b.boundsDraw(sr);
         }

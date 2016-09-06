@@ -52,38 +52,39 @@ public class Player extends Character implements Disposable {
         super.update(dt, entities);
         prevPos.set(pos);
         updateInput();
-        //get acceleration - gravity if airborn + (+/-) direction.scl(Constant run impulse)
-        //direction : if airborn is 1 or -1, if grounded the direction is the normal of linstart.sub(lineend)
-        //if this gets updated every frame then the resulting speed will follow the path, but we also have to update the path
-
-//        if (airState == Constants.airStates.GROUNDED){
-//            verifyDirection();
-//        } else {
-//            direction.set(0,0);
-//            if (moveLeft){
-//                direction.set(-1,0);
-//            }
-//            if (moveRight){
-//                direction.set(1,0);
-//            }
-//        }
+        airState = updateAirState();
         acceleration.set(0,-Constants.gravity * dt);
         if (moveLeft) {
-            acceleration.add(-Constants.RUN_IMPULSE, 0);
+            if (airState.equals(Constants.airStates.GROUNDED)) {
+                verifyDirection();
+                acceleration.add(direction.cpy().scl(-Constants.RUN_IMPULSE * dt));
+            } else {
+                acceleration.add(-Constants.RUN_IMPULSE * dt, 0);
+            }
         }
         if (moveRight) {
-            acceleration.add(Constants.RUN_IMPULSE, 0);
+            if (airState.equals(Constants.airStates.GROUNDED)){
+                verifyDirection();
+                acceleration.add(direction.cpy().scl(Constants.RUN_IMPULSE * dt));
+            } else {
+                acceleration.add(Constants.RUN_IMPULSE * dt, 0);
+            }
         }
+
         if (jumping) {
             acceleration.add(0, 10);
+            walkPath = null;
         }
+
         if (gliding) {
             acceleration.add(0, -1);
         }
 
-        speed.add(acceleration.scl(dt));
+        //have to cap the speed at a max
+        speed.add(acceleration.cpy().scl(dt));
+//        speed.clamp(-Constants.MAX_RUN_SPEED, Constants.MAX_RUN_SPEED);
         if (!moveLeft && !moveRight && !jumping && !gliding) {
-            acceleration.set(0,-Constants.gravity);
+//            acceleration.set(0,-Constants.gravity);
             speed.interpolate(new Vector2(0, speed.y), 0.25f, Interpolation.fade);
         }
 
@@ -93,53 +94,19 @@ public class Player extends Character implements Disposable {
         pos.add(speed);
         shape.setPosition(pos.x, pos.y);
     }
-    public void verifyDirection(){
 
-        if (needPrevLine() && !isGroundEdge()){
-//            Gdx.app.log("Need prev line", "");
-            getPrevLine();
+    public Constants.airStates updateAirState(){
+        if (walkPath == null){
+            if (speed.y >= 0) {
+                airState = Constants.airStates.JUMPING;
+            }
+            if (speed.y <= 0 && airState != Constants.airStates.GLIDING){
+                airState = Constants.airStates.FALLING;
+            }
+        }else {
+            airState = Constants.airStates.GROUNDED;
         }
-        if (needNextLine() && !isGroundEdge()){
-//            Gdx.app.log("Need next line", "");
-            getNextLine();
-        }
-        if (isGroundEdge()){
-            walkOffEdge();
-        }
-
-    }
-
-    public boolean needPrevLine(){
-        return (foot.x < lineStart.x) && speed.x <= 0f;
-    }
-
-    public boolean needNextLine(){
-        return foot.x > lineEnd.x && speed.x >= 0f;
-    }
-
-    public void getPrevLine(){
-        if (lineStart != groundStart) {
-            groundEnd = groundStart;
-            lineIndex--;
-            setDirection();
-        }
-    }
-
-    public void getNextLine(){
-        if (lineIndex + 1 <= walkPath.size - 2) {
-            groundStart = groundEnd;
-            lineIndex++;
-            setDirection();
-        }
-    }
-
-    public boolean isGroundEdge(){
-        return ((walkPath.get(walkPath.size - 1).x < pos.x) || (walkPath.first().x >= botRight.x));
-    }
-
-    private void walkOffEdge(){
-        walkPath = null;
-        airState = Constants.airStates.FALLING;
+        return airState;
     }
 
     public void getAcceleration(Constants.airStates airState){
@@ -160,6 +127,7 @@ public class Player extends Character implements Disposable {
                 int groundIndex = getGround();
                 if (groundIndex!= -1){
                     airState = Constants.airStates.GROUNDED;
+                    direction.set(setDirection());
                 }
                 break;
             case Constants.LADDER:

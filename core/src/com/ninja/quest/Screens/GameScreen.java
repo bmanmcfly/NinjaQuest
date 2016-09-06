@@ -89,65 +89,6 @@ public class GameScreen implements Screen {
 
     }
 
-//    public void UpdateCollisions(float delta){
-//        int start;
-//        boolean collision = false;
-//        for (Terrain T : terrainPoly){
-//            //Check terrain vs Player2, Enemy, Items
-//            Vector2 correction = collider.updateCollision(T.getShape(), player2.getShape());
-//            if (correction != null){
-//                Gdx.app.log("Correction", correction.toString());
-//                if (collider.checkPoint(player2.getFoot(), T.getShape())){
-//                    Gdx.app.log("Foot", "passed");
-//                    if (player2.getWalkPath() == null) {
-////                        Gdx.app.log("Update Collision", "Walk path not null");
-//                        for (Ground tmp : walkPath) {
-//                            start = collider.prunePath(tmp.getWalkPath(), player2.getFoot());
-//                            if (start != -1) {
-//                                player2.setWalkPath(tmp.getWalkPath(), start);
-//                                player2.setFoot(collider.getNearest());
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//                if (collider.checkPoint(player2.getHead(), T.getShape())){
-//                    Gdx.app.log("blockhead", "true");
-//                    player2.setBlockHead(true);
-//                }
-//                if (collider.checkPoint(player2.getlHand(), T.getShape())){
-//                    Gdx.app.log("block left", "true");
-//                    player2.setBlockLeft(true);
-//                }
-//                if (collider.checkPoint(player2.getrHand(), T.getShape())){
-//                    Gdx.app.log("block right", "true");
-//                    player2.setBlockRight(true);
-//                }
-//                collision = true;
-//                player2.resolveCollision(correction);
-////                player2.checkBlocked(T.getShape());
-//            }
-//        }
-//        if (!collision){
-//            player2.clearBlocked();
-////            Gdx.app.log("blocked", "cleared");
-//        }
-//    }
-
-//    public void UpdateCollisions(float delta){
-//        boolean close;
-//        for(Terrain T: terrainPoly) {
-//            close = collider.pruneCollisions(player.getBody(), T.getBody());
-//            T.setTouched(close);
-//            if (close){
-//                if (collider.getCollision(player.getBody(), T.getBody())) {
-////                    Gdx.app.log("Collision", "With Terrain");
-//                    collider.resolve(player.getBody(), T.getBody());
-//                }
-//            }
-//        }
-//    }
-
     public void update(float delta){
 //        int updatesThisFrame = 0;
         if (delta >= 0.25f){
@@ -155,15 +96,12 @@ public class GameScreen implements Screen {
         }
         //Get entity data for the previous position
         time += delta;
-        while (time > step /*&& updatesThisFrame < maxUpdatesPerFrame*/){
+        while (time > step){
             world.update(step);
-//            updatesThisFrame++;
+
             time -= step;
         }
-        world.update(time);
-//        interpolation = time / step; //This is the % between the previous frame and the next frame
-//        player2.interpolate(time);
-//        Gdx.app.log("Updates" + Integer.toString(updatesThisFrame),"interpolation" + Float.toString(interpolation));
+        world.update(time); //update with the remaineder of the time to the next frame
         cam.displacement(world.getPlayer().getPos().x, world.getPlayer().getPos().y, map);
     }
 
@@ -184,7 +122,7 @@ public class GameScreen implements Screen {
         mapRender.setView(cam);
         sr.setProjectionMatrix(cam.combined);
 
-//        world.drawBounds(sr);
+        world.drawBounds(sr);
 
         world.debugRender(sr);
 
