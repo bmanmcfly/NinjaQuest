@@ -24,7 +24,6 @@ public class Input implements InputProcessor {
 
     public Input(){}
 
-    @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case com.badlogic.gdx.Input.Keys.LEFT:
@@ -107,8 +106,8 @@ public class Input implements InputProcessor {
     /**
      * Called when a finger was lifted or a mouse button was released. The button parameter will be {@link com.badlogic.gdx.Input.Buttons#LEFT} on iOS.
      *
-     * @param screenX
-     * @param screenY
+     * @param screenX the x position on the screen
+     * @param screenY the y position on the screen
      * @param pointer the pointer for the event.
      * @param button  the button   @return whether the input was processed
      */
@@ -120,8 +119,8 @@ public class Input implements InputProcessor {
     /**
      * Called when a finger or the mouse was dragged.
      *
-     * @param screenX
-     * @param screenY
+     * @param screenX the x position on the screen
+     * @param screenY the y position on the screen
      * @param pointer the pointer for the event.  @return whether the input was processed
      */
     @Override
@@ -132,8 +131,8 @@ public class Input implements InputProcessor {
     /**
      * Called when the mouse was moved without any buttons being pressed. Will not be called on iOS.
      *
-     * @param screenX
-     * @param screenY
+     * @param screenX the x position on the screen
+     * @param screenY the y position on the screen
      * @return whether the input was processed
      */
     @Override

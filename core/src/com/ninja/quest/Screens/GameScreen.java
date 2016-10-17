@@ -97,11 +97,12 @@ public class GameScreen implements Screen {
         //Get entity data for the previous position
         time += delta;
         while (time > step){
+//            Gdx.app.log("time" + time, "step" + step);
             world.update(step);
-
             time -= step;
         }
         world.update(time); //update with the remaineder of the time to the next frame
+//        Gdx.app.log("Interpolation frame", Float.toString(time));
         cam.displacement(world.getPlayer().getPos().x, world.getPlayer().getPos().y, map);
     }
 
@@ -121,19 +122,23 @@ public class GameScreen implements Screen {
 
         mapRender.setView(cam);
         sr.setProjectionMatrix(cam.combined);
-
         world.drawBounds(sr);
-
         world.debugRender(sr);
-
         game.getBatch().begin();
 //        Vector3 textPos = new Vector3(10, 10,0);
 //        cam.unproject(textPos);
         Vector3 markerPos = new Vector3(10, 10, 0);
         cam.unproject(markerPos);
-        game.markerFont.draw(game.getBatch(), "FPS: " + Integer.toString(Gdx.graphics.getFramesPerSecond()) /*+
-                "\nSpeed: " + player.getBody().getSpeed().toString()*/, markerPos.x, markerPos.y);
-//        player2.draw();
+        game.markerFont.draw(game.getBatch(), "FPS: " + Integer.toString(Gdx.graphics.getFramesPerSecond()) +
+                "\nDirection " + world.getPlayer().getDirection().toString() +
+                "\nSpeed " + world.getPlayer().getSpeed().toString() +
+                "\ndirX = " + world.getPlayer().getDirX() + ", dirY = " + world.getPlayer().getDirY() +
+                "\nLine Start" + world.getPlayer().getLineStart().toString() +
+                "\nLine End" + world.getPlayer().getLineEnd().toString() +
+                "\nLine Index" + world.getPlayer().getLineIndex() +
+                "\nGround Start" + world.getPlayer().getGroundStart().toString() +
+                "\nGround End" + world.getPlayer().getGroundEnd().toString() +
+                "\nFoot" + world.getPlayer().getFoot().toString(), markerPos.x, markerPos.y);
         game.getBatch().end();
     }
 

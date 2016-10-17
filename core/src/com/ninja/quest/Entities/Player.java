@@ -2,7 +2,6 @@ package com.ninja.quest.Entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -21,10 +20,12 @@ public class Player extends Character implements Disposable {
     private TextureAtlas.AtlasRegion region;
 
     private Vector2 direction = new Vector2();
-
+    private Vector2 deltaPos = new Vector2();
+    private float dirX = 0;
+    private float dirY = 0;
+    private int frameCount = 0;
     //Controls
     private boolean moveLeft = false, moveRight = false, jumping = false, gliding = false;
-
 
     public Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape, World world) {
         super(shape, initPos, world);
@@ -53,104 +54,150 @@ public class Player extends Character implements Disposable {
         prevPos.set(pos);
         updateInput();
         airState = updateAirState();
-        acceleration.set(0,-Constants.gravity * dt);
-        if (moveLeft) {
-            if (airState.equals(Constants.airStates.GROUNDED)) {
-                verifyDirection();
-                acceleration.add(direction.cpy().scl(-Constants.RUN_IMPULSE * dt));
-            } else {
-                acceleration.add(-Constants.RUN_IMPULSE * dt, 0);
-            }
-        }
-        if (moveRight) {
-            if (airState.equals(Constants.airStates.GROUNDED)){
-                verifyDirection();
-                acceleration.add(direction.cpy().scl(Constants.RUN_IMPULSE * dt));
-            } else {
-                acceleration.add(Constants.RUN_IMPULSE * dt, 0);
-            }
-        }
 
-        if (jumping) {
-            acceleration.add(0, 10);
-            walkPath = null;
-        }
-
-        if (gliding) {
-            acceleration.add(0, -1);
-        }
-
-        //have to cap the speed at a max
-        speed.add(acceleration.cpy().scl(dt));
-//        speed.clamp(-Constants.MAX_RUN_SPEED, Constants.MAX_RUN_SPEED);
-        if (!moveLeft && !moveRight && !jumping && !gliding) {
-//            acceleration.set(0,-Constants.gravity);
-            speed.interpolate(new Vector2(0, speed.y), 0.25f, Interpolation.fade);
-        }
-
-        //will reset the speed to prevent tunneling.
+        //Checks the player state and input to determine the acceleration for this frame
+        calcSpeed(airState, dt);
         collides(entities);
-
         pos.add(speed);
         shape.setPosition(pos.x, pos.y);
     }
 
     public Constants.airStates updateAirState(){
         if (walkPath == null){
-            if (speed.y >= 0) {
+            if (speed.y > 0) {
                 airState = Constants.airStates.JUMPING;
+//                Gdx.app.log("Jumping", "airstate");
             }
             if (speed.y <= 0 && airState != Constants.airStates.GLIDING){
                 airState = Constants.airStates.FALLING;
+//                Gdx.app.log("airstate", "Falling");
             }
         }else {
             airState = Constants.airStates.GROUNDED;
+//            Gdx.app.log("airstate", "Grounded");
         }
         return airState;
-    }
-
-    public void getAcceleration(Constants.airStates airState){
-
     }
 
     public void collisionResponse(BaseEntity other){
         switch (other.entityIs){
             case Constants.TERRAIN:
+//                Gdx.app.log("Terrain", "Collision response");
                 Vector2 adjustment;
                 adjustment = MTV.normal.scl(MTV.depth);
-//                Gdx.app.log("Adjustment", adjustment.toString());
-//                Gdx.app.log("Speed", speed.toString());
                 if (adjustment.cpy().dot(speed) < 0){
-//                    Gdx.app.log("Dot", "Less than 0");
                     speed.sub(adjustment.scl(-1));
                 }
                 int groundIndex = getGround();
-                if (groundIndex!= -1){
+                if (groundIndex != -1){
+                    direction.set(calcDirection());
                     airState = Constants.airStates.GROUNDED;
-                    direction.set(setDirection());
+                    if (dirX == 0) {
+                        speed.set(0, 0);
+                    }
+                    else {
+                        speed.y = 0;
+                    }
+                } else {
+                    airState = Constants.airStates.FALLING;
                 }
                 break;
             case Constants.LADDER:
                 break;
             case Constants.E_BULLET:
                 break;
-
         }
     }
 
-    public void move(Vector2 direction){
+    public void calcSpeed(Constants.airStates airState, float dt){
+        if (moveLeft){
+            dirX = -1;
+            facingRight = false;
+        }
+        if (moveRight){
+            dirX = 1;
+            facingRight = true;
+        }
+        if ((moveLeft && moveRight) || (!moveRight && !moveLeft)){
+            dirX = 0;
+        }
+        switch (airState){
+            case GLIDING:
+                break;
+            case JUMPING:
+            case FALLING:
+                dirY = -1;
+                applyAirAccel(dt);
+                break;
+            case GROUNDED:
+                dirY = 0;
+                applyGroundAccel(dt);
+                break;
+        }
+    }
+
+    public void applyGroundAccel(float dt){
+              //TODO: fix grounded movement
+//            //Summary:
+//            //*  - get the direction or slope of the ground
+//            //*  - check if the player walks off the edge, OR if the player jumps
+//            //  - if the speed.len < Max run speed then add the acceleration
+//            //      acceleration = direction.scl(dirX * runImpulse * dt)
+//            //  - if the speed.len >= maxrunspeed, then the speed vector = direction.scale(dirX * maxrunspeed * dt
+        direction.set(walkDirection());
+//        Gdx.app.log("direction", direction.toString());
+        if (speed.len() < 2)
+            speed.mulAdd(direction.scl(dirX), 5 * dt);
+        if (dirX == 0)
+            speed.scl(0.5f);
 
     }
 
+    public void applyAirAccel(float dt){
 
-//    public void setDirection
-//    public Vector2 getFoot(){ return foot; }
-//    public Vector2 getHead(){ return head; }
-//    public Vector2 getPos(){ return pos;}
+        speed.y += -0.05f;
+        if (speed.y <= -3f)
+            speed.y = -3f;
+        if (dirX == 0) {
+            if (Math.abs(speed.x) <= 0.05f){
+                speed.x = 0;
+            }else {
+                speed.x *= 0.8;
+            }
+        }
+        if (dirX != 0 ){
+            if (Math.abs(speed.x) <= 5){
+                speed.x += dirX * 0.05f;
+            } else {
+                speed.x = dirX * 4f;
+            }
+        }
+    }
 
     @Override
     public void dispose() {
 
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    //Getters and Setters
+    /////////////////////////////////////////////////////////////////////////
+
+    public Vector2 getDirection() {
+        return direction;
+    }
+
+    public Vector2 getSpeed(){
+//        Gdx.app.log("speed", speed.toString());
+        return speed;
+    }
+
+    public float getDirX(){
+        return dirX;
+    }
+
+    public float getDirY(){
+        return dirY;
     }
 
 }

@@ -1,5 +1,6 @@
 apply plugin: "java"
 
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
 
@@ -11,7 +12,7 @@ task run(dependsOn: classes, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
-    ignoreExitValue = true
+    ignoreExitValue = true as JavaExecSpec
 }
 
 task dist(type: Jar) {

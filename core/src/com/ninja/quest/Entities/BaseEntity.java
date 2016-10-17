@@ -1,5 +1,6 @@
 package com.ninja.quest.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -22,26 +23,26 @@ import com.ninja.quest.Constants.Constants;
  */
 public abstract class BaseEntity implements Disposable{
     //Physics stuff
-    protected World world;
+    World world;
     protected Intersector.MinimumTranslationVector MTV = new Intersector.MinimumTranslationVector();
-    protected Vector2 pos = new Vector2();
+    Vector2 pos = new Vector2();
     protected Vector2 prevPos = new Vector2();
-    protected Vector2 speed = new Vector2(0,0);
-    protected Vector2 direction = new Vector2(0,0);
-    protected Vector2 acceleration = new Vector2(0,0);
-    protected Rectangle bounds = new Rectangle();
+    Vector2 speed = new Vector2(0,0);
+    protected Vector2 dirVec = new Vector2(0,0);
+//    Vector2 acceleration = new Vector2(0,0);
+    private Rectangle bounds = new Rectangle();
     protected Polygon shape = new Polygon();
-    protected boolean isAlive;
+    private boolean isAlive;
 //    protected boolean remove = false; //set to true before removing entity
 //    protected Array<Vector2> prePoints = new Array<Vector2>();
 //    protected Array<Vector2> otherPoints = new Array<Vector2>();
 
     protected short entityIs;
-    protected short collidesWith;
+    short collidesWith;
 
     //image and state
     protected Sprite sprite = new Sprite();
-    protected boolean isTouched = false;
+    private boolean isTouched = false;
     protected Constants.airStates airState;
 
     protected BaseEntity(Polygon shape, Vector2 position, World world){
@@ -61,7 +62,7 @@ public abstract class BaseEntity implements Disposable{
         bounds.height += Constants.PixPerTile;
     }
 
-    public void updateBounds(){
+    private void updateBounds(){
         bounds = shape.getBoundingRectangle();
         resizeBounds();
     }
@@ -86,26 +87,6 @@ public abstract class BaseEntity implements Disposable{
         sr.box(bounds.x, bounds.y, 0, bounds.getWidth(), bounds.getHeight(),0);
     }
 
-    public Sprite getSprite(){
-        return sprite;
-    }
-
-    public boolean isAlive(){
-        return isAlive;
-    }
-
-    public boolean getTouched() {
-        return isTouched;
-    }
-
-    public Vector2 getPos(){
-        return pos;
-    }
-
-    public void dispose(){
-
-    }
-
     protected void collisionResponse(BaseEntity other){}
 
     public Array<Vector2> setPolyToVecArray(Polygon polygon){
@@ -121,9 +102,9 @@ public abstract class BaseEntity implements Disposable{
         return polyPoints;
     }
 
-    public boolean collides(Array<BaseEntity> things){
+    void collides(Array<BaseEntity> things){
         int size = things.size;
-        boolean collision = false;
+//        boolean collision = false;
         Polygon moveShape = this.shape;
         moveShape.translate(this.speed.x, this.speed.y);
         for(int i = 0; i < size; i++) {
@@ -133,29 +114,85 @@ public abstract class BaseEntity implements Disposable{
             // First, get the speed of both entities.  get the dot product between both speeds
             temp.isTouched = (thisTest & this.collidesWith) == 0 &&
                     Intersector.overlaps(temp.bounds, this.bounds);
-            if (temp.isTouched /*&& dotProduct <= 0*/) {
-//                Gdx.app.log("dot", Float.toString(dotProduct));
+            if (temp.isTouched) {
                 //now, move this to its next position,
                 //test for collision with the object
                 //if the test passes, add it to the list of collisions
-                if (Intersector.overlapConvexPolygons(moveShape, temp.shape, MTV)) {
+                if (Intersector.overlapConvexPolygons(moveShape, temp.shape, this.MTV)) {
+                    Gdx.app.log("Collision", temp.shape.getBoundingRectangle().x + ", " + temp.shape.getBoundingRectangle().y + " " + this.pos.toString());
                     this.collisionResponse(temp);
                     temp.collisionResponse(this);
-                    collision = true;
                 }
             }
         }
-        //if the collision list is still empty, no collisions.
-        return collision;
     }
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("ID").append(Short.toString(entityIs));
-        sb.append("\nPosition :").append(pos);
-        sb.append("\nSpeed: ").append(speed);
-        sb.append("\nis Touched").append(Boolean.toString(isTouched));
+        sb.append("ID").append(Short.toString(this.entityIs));
+        sb.append("\nPosition :").append(this.pos);
+        sb.append("\nSpeed: ").append(this.speed);
+        sb.append("\nis Touched").append(Boolean.toString(this.isTouched));
         return sb.toString();
     }
 
+
+    public Sprite getSprite(){
+        return this.sprite;
+    }
+
+    public boolean isAlive(){
+        return this.isAlive;
+    }
+
+    public boolean getTouched() {
+        return this.isTouched;
+    }
+
+    public Vector2 getPos(){
+        return this.pos;
+    }
+
+    public void setPos(Vector2 pos) {
+        this.pos = pos;
+    }
+
+    public Vector2 getPrevPos() {
+        return this.prevPos;
+    }
+
+    public Vector2 getSpeed() {
+        return this.speed;
+    }
+
+    public Vector2 getDirVec() {
+        return this.dirVec;
+    }
+
+    public void setDirVec(Vector2 dirVec) {
+        this.dirVec = dirVec;
+    }
+
+    public Polygon getShape() { return this.shape; }
+
+    public void setShape(Polygon shape) {
+        this.shape = shape;
+    }
+
+    public short getEntityIs() {
+        return this.entityIs;
+    }
+
+
+    public short getCollidesWith() {
+        return this.collidesWith;
+    }
+
+    public Constants.airStates getAirState() {
+        return this.airState;
+    }
+
+    public void dispose(){
+
+    }
 }

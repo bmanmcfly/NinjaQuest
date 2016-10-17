@@ -39,7 +39,7 @@ public class NinjaQuest extends Game {
 		assets.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
 		param.fontFileName = "fonts/DJGROSS.ttf";
-		param.fontParameters.size = (int)Math.ceil(Gdx.graphics.getHeight() / 30);
+		param.fontParameters.size = (int)Math.ceil(Gdx.graphics.getHeight() / 40);
 		param.fontParameters.borderWidth = 1.5f;
 		param.fontParameters.characters = Constants.FONT_CHARACTERS;
 		param.fontParameters.magFilter = Texture.TextureFilter.MipMapNearestNearest;
@@ -50,7 +50,7 @@ public class NinjaQuest extends Game {
 		parameters.fontFileName = "fonts/PermanentMarker.ttf";
 		parameters.fontParameters.characters = Constants.FONT_CHARACTERS;
 		parameters.fontParameters.borderWidth = 1.5f;
-		parameters.fontParameters.size = (int)Math.ceil(Gdx.graphics.getHeight() / 30);
+		parameters.fontParameters.size = (int)Math.ceil(Gdx.graphics.getHeight() / 40);
 		assets.load("PermanentMarker.ttf", BitmapFont.class, parameters);
 		assets.finishLoading();
 		markerFont = assets.get("PermanentMarker.ttf");

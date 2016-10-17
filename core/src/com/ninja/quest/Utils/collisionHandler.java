@@ -9,13 +9,12 @@ import com.badlogic.gdx.utils.Array;
 
 public class collisionHandler {
     private static Intersector.MinimumTranslationVector MTD = new Intersector.MinimumTranslationVector();
-    private Vector2 speedA, speedB;
     private Polygon polyA, polyB;
     private Vector2 correction = new Vector2();
     private Array<Vector2> polyArray = new Array<Vector2>();
     public collisionHandler(){
-        speedA = new Vector2();
-        speedB = new Vector2();
+        Vector2 speedA = new Vector2();
+        Vector2 speedB = new Vector2();
 
     }
 

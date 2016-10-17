@@ -71,7 +71,6 @@ public class World {
             switch (b.entityIs){
                 case Constants.PLAYER:
                     b.update(delta, entityArray);
-//                    Gdx.app.log("Update", "Player");
                     break;
 //                case Constants.E_BULLET:
 //                    b.update(delta, entityArray);

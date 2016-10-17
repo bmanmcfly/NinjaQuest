@@ -11,6 +11,9 @@ import com.badlogic.gdx.utils.Array;
  * Each ground object will be one connected length of terrain
  *
  */
+
+//// TODO: 10/13/2016 add the ability to compensate for moveable terrain
+//    ground will not be a visible layer
 public class Ground{
 
     private Array<Vector2> points = new Array<Vector2>();

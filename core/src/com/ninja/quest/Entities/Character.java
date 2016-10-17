@@ -19,12 +19,16 @@ import com.ninja.quest.Constants.Constants;
  */
 public abstract class Character extends BaseEntity implements Disposable {
 
+    //Variables related to Grounded state when not grounded walkpath == null
     protected Array<Vector2> walkPath = new Array<Vector2>();
     protected int lineIndex;
     protected Vector2 lineStart = new Vector2();
     protected Vector2 lineEnd = new Vector2();
     protected Vector2 groundStart = new Vector2();
     protected Vector2 groundEnd = new Vector2();
+    protected Vector2 nearestPoint = new Vector2();
+    protected Array<Ground> ground = new Array<Ground>();
+    protected Array<Vector2> sections = new Array<Vector2>();
 
     //States
     protected Constants.airStates airState;
@@ -36,19 +40,25 @@ public abstract class Character extends BaseEntity implements Disposable {
     protected Vector2 rHand = new Vector2();
     protected Vector2 lHand = new Vector2();
     protected Vector2 botRight = new Vector2();
+    //TODO: add sensor to detect what enemies are on the screen, enemies off the screen by more than 1 square will be in a wait state
+//    TODO: Fix the way that characters walk on the ground, so that the character walks along the ground
+    protected boolean facingRight = true;
 
     protected Character(Polygon shape, Vector2 initPos, World world) {
         super(shape, initPos, world);
-        walkPath = null;
+        this.walkPath = null;
+        ground = world.getGround();
         updateVerts();
     }
 
     protected void updateVerts(){
-        head.set(pos.x + shape.getBoundingRectangle().width / 2, pos.y + shape.getBoundingRectangle().getHeight());
-        foot.set(pos.x + shape.getBoundingRectangle().width / 2, pos.y);
-        rHand.set(pos.x + shape.getBoundingRectangle().width, pos.y + shape.getBoundingRectangle().height / 2);
-        lHand.set(pos.x, pos.y + shape.getBoundingRectangle().height / 2);
-        botRight.set(pos.x + shape.getBoundingRectangle().width, pos.y);
+        this.head.set(this.pos.x + this.shape.getBoundingRectangle().width / 2,
+                this.pos.y + this.shape.getBoundingRectangle().getHeight());
+        this.foot.set(this.pos.x + this.shape.getBoundingRectangle().width / 2, this.pos.y);
+        this.rHand.set(this.pos.x + this.shape.getBoundingRectangle().width,
+                this.pos.y + this.shape.getBoundingRectangle().height / 2);
+        this.lHand.set(this.pos.x, this.pos.y + this.shape.getBoundingRectangle().height / 2);
+        this.botRight.set(this.pos.x + this.shape.getBoundingRectangle().width, this.pos.y);
     }
 
     @Override
@@ -58,26 +68,28 @@ public abstract class Character extends BaseEntity implements Disposable {
     }
 
     public int getGround(){
-        Array<Ground> ground = world.getGround();
-        Array<Vector2> sections;
-        if (walkPath == null) {
+        /**This one works, be careful of changes*/
+        if (this.walkPath == null) {
             for (int j = 0; j < ground.size; j++) {
-                sections = ground.get(j).getWalkPath();
-                if (foot.x < sections.first().x) continue;
-                if (foot.x > sections.get(sections.size - 1).x) continue;
-                Gdx.app.log("Foot", "between ground" + j);
-                for (int i = 0; i < sections.size - 1; i++) {
-                    Vector2 p1 = sections.get(i);
-                    Vector2 p2 = sections.get(i + 1);
-                    if (p1.x < foot.x && foot.x < p2.x) {
-                        Gdx.app.log("Testing; p1", p1.toString() +", foot:"+ foot.toString() + ", p2"+ p2.toString());
-                        if (Intersector.distanceSegmentPoint(p1, p2, foot) < Constants.TOLERANCE) {
-                            Gdx.app.log("Found p1", p1.toString() + ", foot:" + foot.toString() + ", p2" + p2.toString());
-                            walkPath = sections;
-                            groundStart = walkPath.first();
-                            groundEnd = walkPath.get(walkPath.size - 1);
-                            lineStart = p1;
-                            lineEnd = p2;
+                this.sections = ground.get(j).getWalkPath();
+                if (this.foot.x < this.sections.first().x) continue;
+                if (this.foot.x > this.sections.get(this.sections.size - 1).x) continue;
+//                Gdx.app.log("Foot", "between ground " + j);
+                for (int i = 0; i < this.sections.size - 1; i++) {
+                    this.lineStart = sections.get(i);
+                    this.lineEnd = sections.get(i + 1);
+                    if (this.lineStart.x < this.foot.x && this.foot.x < this.lineEnd.x) {
+//                        Gdx.app.log("Testing; p1", p1.toString() +", foot:"+ foot.toString() + ", p2"+ p2.toString());
+                        if (Intersector.distanceSegmentPoint(this.lineStart, this.lineEnd, this.foot) < Constants.TOLERANCE) {
+//                            Gdx.app.log("Found p1", p1.toString() + ", foot:" + foot.toString() + ", p2" + p2.toString());
+                            Intersector.nearestSegmentPoint(this.lineStart, this.lineEnd, this.foot, this.nearestPoint);
+                            this.pos.set(this.foot.x - this.shape.getBoundingRectangle().width / 2, nearestPoint.y);
+                            updateVerts();
+                            Gdx.app.log("foot: " + foot.toString(), "nearest: " + nearestPoint.toString());
+                            this.walkPath = sections;
+                            this.groundStart = walkPath.first();
+                            this.groundEnd = this.walkPath.get(this.walkPath.size - 1);
+                            this.lineIndex = i;
                             return i;
                         }
                     }
@@ -87,69 +99,116 @@ public abstract class Character extends BaseEntity implements Disposable {
         return -1;
     }
 
+    public Vector2 calcDirection(){
+        Vector2 temp = this.lineEnd.cpy();
+        dirVec = temp.sub(this.lineStart.cpy());
+        dirVec.nor();
+//        Gdx.app.log("Calc dirVec", dirVec.toString());
+        return dirVec;
+    }
 
-    public void verifyDirection(){
-        setDirection();
-        if (needPrevLine() && !isGroundEdge()){
-//            Gdx.app.log("Need prev line", "");
-            getPrevLine();
+    public Vector2 walkDirection(){
+        // TODO: 10/14/2016 fix the walk direction so that the speed gets adjusted to the direction of the ground segment
+        // that the player is standing on.
+        // if the player has a valid walkpath
+        // save the previous direction vector
+        // if there is a change to the direction, or if the player walks off the edge
+        // then recalculate the direction
+        if (this.walkPath != null){
+//            if (!isGroundEdge()) {
+//                Gdx.app.log("Not ground edge", "");
+            if (needNextLine()) {
+                if (!isGroundEdge()) {
+                    Gdx.app.log("Need next line", "");
+                    getNextLine();
+                } else {
+                    // TODO: 10/16/2016 make sure that the player is actually past the edge
+                    walkOffEdge();
+                }
+            }
+            if (needPrevLine()) {
+                Gdx.app.log("Need prev line", "");
+                getPrevLine();
+            }
+//            }
+            return calcDirection();
         }
-        if (needNextLine() && !isGroundEdge()){
-//            Gdx.app.log("Need next line", "");
-            getNextLine();
-        }
-        if (isGroundEdge()){
-            walkOffEdge();
-        }
-
+//            } else {
+//                walkOffEdge();
+//                Gdx.app.log("Walked off edge", "");
+//
+//                return dirVec.set(0,0);
+//            }
+//
+//            return calcDirection();
+//        } else
+        return dirVec.set(1,0);
     }
 
     public boolean needPrevLine(){
-        return (foot.x < lineStart.x) && speed.x <= 0f;
+        if (speed.x < 0){
+            if (Intersector.distanceSegmentPoint(this.lineStart, this.lineEnd, this.foot) < Constants.TOLERANCE){
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean needNextLine(){
-        return foot.x > lineEnd.x && speed.x >= 0f;
+        if (speed.x > 0){
+            if (this.foot.x > this.lineEnd.x ){
+                return true;
+            }
+        }
+        return false;//this.getFoot().x > this.getLineEnd().x && this.speed.x >= 0f;
     }
 
     public void getPrevLine(){
-        if (lineStart != groundStart) {
-            groundEnd = groundStart;
-            lineIndex--;
-            setDirection();
-        }
+////  THIS IS WRONG... get previous line
+////        1- make sure there IS a previous line
+////        2- set the end point to the start point
+////        3- reduce the line index by 1
+////        4- get the point at the new index and assign it to the linestart
+//
+//        if (this.getLineStart() != this.getGroundStart()) {
+//            this.getLineEnd().set(this.getLineStart());
+//            this.setLineIndex(getLineIndex() - 1);
+//
+////            this.setLineStart(groundStart);
+////            this.setLineIndex(getLineIndex() - 1);
+//////            setDirection();
+//        }
     }
 
     public void getNextLine(){
-        if (lineIndex + 1 <= walkPath.size - 2) {
-            groundStart = groundEnd;
-            lineIndex++;
-            setDirection();
+        //We know that this is not the edge of the ground at this point
+        // TODO: 10/16/2016 make above comment true
+        if (this.lineIndex <= this.walkPath.size - 2){
+            this.lineStart.set(lineEnd);
+            this.lineIndex++;
+            this.lineEnd.set(this.walkPath.get(this.lineIndex + 1));
+            Gdx.app.log("Got Next Line", Integer.toString(lineIndex));
         }
+//        if (this.getLineIndex() + 1 <= this.getWalkPath().size - 2) {
+//            this.setLineStart(this.getLineEnd());
+//            lineIndex++;
+////            setDirection();
+//        }
     }
 
     public boolean isGroundEdge(){
-        return ((walkPath.get(walkPath.size - 1).x < pos.x) || (walkPath.first().x >= botRight.x));
+        // TODO: 10/16/2016 figure out if the player is approaching the ground edge for the current platform
+
+//        return ((this.walkPath.get(this.walkPath.size - 1).x < this.pos.x) || (this.walkPath.first().x >= this.botRight.x));
+//        return (this.lineStart.equals(this.groundStart) && (this.botRight.x < this.lineStart.x)) ||
+//                (this.lineEnd.equals(this.groundEnd) && (this.pos.x > this.groundEnd.x));
+        return false;
     }
 
-    private void walkOffEdge(){
-        walkPath = null;
-        airState = Constants.airStates.FALLING;
-    }
-
-    public Vector2 setDirection(){
-        if (walkPath != null) {
-            Vector2 temp = walkPath.get(lineIndex + 1).cpy();
-            direction = temp.sub(walkPath.get(lineIndex).cpy());
-            direction.nor();
-        } else {
-            direction.set(1,0);
-        }
-//        foot.set(Intersector.nearestSegmentPoint(path.get(gndLineStart), path.get(gndLineEnd), foot, nearest));
-//        Gdx.app.log("pos before", pos.toString());
-//        body.setPos(new Vector2(foot.x - image.getWidth() / 2, foot.y));
-//        Gdx.app.log("pos after", pos.toString());
-        return direction;
+    public void walkOffEdge(){
+        //once the player has walked off the edge
+        this.walkPath = null;
+        this.airState = Constants.airStates.FALLING;
     }
 
 //    protected boolean jumping;
@@ -160,7 +219,7 @@ public abstract class Character extends BaseEntity implements Disposable {
 //    protected boolean climbing;
 //    protected boolean blockLeft;
 //    protected boolean blockRight;
-//    protected Vector2 direction = new Vector2();
+//    protected Vector2 dirVec = new Vector2();
 //
 
 //
@@ -199,10 +258,81 @@ public abstract class Character extends BaseEntity implements Disposable {
 //    protected abstract void climbSpeed(float dt);
 //    protected abstract void startClimbing();
 //    protected abstract void setDirection(Vector2 dir);
-//    protected abstract Vector2 getHead();
-//    protected abstract Vector2 getFoot();
-//    protected abstract Vector2 getrHand();
-//    protected abstract Vector2 getlHand();
+
+    public Array<Vector2> getWalkPath(){
+        return this.walkPath;
+    }
+
+    public int getLineIndex() {
+        return this.lineIndex;
+    }
+
+//    public void setLineIndex(int lineIndex) {
+//        this.lineIndex = lineIndex;
+//    }
+
+    public void setLineStart(Vector2 lineStart) {
+        this.lineStart = lineStart;
+    }
+
+    public void setLineEnd(Vector2 lineEnd) {
+        this.lineEnd = lineEnd;
+    }
+
+    public Vector2 getLineStart() {
+        return this.lineStart;
+    }
 
 
+    public Vector2 getLineEnd() {
+        return this.lineEnd;
+    }
+
+    public Vector2 getGroundStart() {
+        return this.groundStart;
+    }
+
+    public Vector2 getGroundEnd() {
+        return this.groundEnd;
+    }
+
+    public Vector2 getHead() {
+        return this.head;
+    }
+
+    public void setHead(float x, float y){
+        this.head.set(x,y);
+    }
+
+    public Vector2 getFoot() {
+        return this.foot;
+    }
+
+    public void setFoot(float x, float y){
+        this.foot.set(x, y);
+    }
+
+    public Vector2 getBotRight() {
+        return this.botRight;
+    }
+
+    public void setBotRight(float x, float y){
+        this.botRight.set(x,y);
+    }
+
+    public Vector2 getrHand() {
+        return this.rHand;
+    }
+
+    public void setrHand(float x, float y){
+        this.rHand.set(x,y);
+    }
+
+    public Vector2 getlHand() {
+        return this.lHand;
+    }
+
+    public void setlHand(float x, float y){
+        this.lHand.set(x,y);
+    }
 }

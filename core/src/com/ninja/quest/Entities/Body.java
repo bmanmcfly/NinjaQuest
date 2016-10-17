@@ -1,11 +1,8 @@
 package com.ninja.quest.Entities;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.ninja.quest.Constants.Constants;
 
 /**
@@ -19,7 +16,7 @@ import com.ninja.quest.Constants.Constants;
  * - acceleration
  * -
  */
-public class Body {
+class Body {
     private Vector2 pos = new Vector2();
     private Vector2 speed = new Vector2(0,0);
     private Vector2 acceleration = new Vector2();
@@ -69,7 +66,7 @@ public class Body {
         updateBounds();
     }
 
-    protected void updateBounds(){
+    private void updateBounds(){
         bounds = shape.getBoundingRectangle();
         resizeBounds();
     }
@@ -190,7 +187,7 @@ public class Body {
 //        speed.x = x;
 //    }
 //
-//    public Vector2 getAcceleration() {
+//    public Vector2 calcSpeed() {
 //        return acceleration;
 //    }
 //
