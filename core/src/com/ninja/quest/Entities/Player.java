@@ -1,7 +1,9 @@
 package com.ninja.quest.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -14,7 +16,7 @@ import com.ninja.quest.Utils.Input;
  *
  * A refactored Player class
  */
-public class Player extends Character implements Disposable {
+public class Player extends walkingChar implements Disposable {
     private SpriteBatch sb;
     private TextureAtlas atlas;
     private TextureAtlas.AtlasRegion region;
@@ -52,8 +54,9 @@ public class Player extends Character implements Disposable {
     public void update(float dt, Array<BaseEntity> entities) {
         super.update(dt, entities);
         prevPos.set(pos);
-        updateInput();
         airState = updateAirState();
+
+        updateInput();
 
         //Checks the player state and input to determine the acceleration for this frame
         calcSpeed(airState, dt);
@@ -66,7 +69,7 @@ public class Player extends Character implements Disposable {
         if (walkPath == null){
             if (speed.y > 0) {
                 airState = Constants.airStates.JUMPING;
-//                Gdx.app.log("Jumping", "airstate");
+                Gdx.app.log("Jumping", "airstate");
             }
             if (speed.y <= 0 && airState != Constants.airStates.GLIDING){
                 airState = Constants.airStates.FALLING;
@@ -76,7 +79,51 @@ public class Player extends Character implements Disposable {
             airState = Constants.airStates.GROUNDED;
 //            Gdx.app.log("airstate", "Grounded");
         }
-        return airState;
+        return this.airState;
+    }
+
+    public void calcSpeed(Constants.airStates airState, float dt){
+        if (moveLeft){
+            dirX = -1;
+            if (speed.x < 0)
+                facingRight = false;
+        }
+        if (moveRight){
+            dirX = 1;
+            if (speed.x > 0)
+                facingRight = true;
+        }
+        if ((moveLeft && moveRight) || (!moveRight && !moveLeft)){
+            dirX = 0;
+        }
+//        Gdx.app.log("calc speed", "");
+
+        //get the movement speed for the player
+        switch (airState){
+            case JUMPING:
+            case FALLING:
+                if (dirX != 0) {
+                    speed.x += dirX * 2 * dt;
+                } else
+                    speed.x *= Constants.DAMPING;
+                speed.y += -Constants.gravity * dt;
+                break;
+            case GROUNDED:
+                updateLine(dt, dirX);
+                direction.set(calcDirection());
+                if (dirX != 0){
+                    if (speed.len() < 2){
+                        direction.scl(dirX * 2 * dt);
+                        speed.add(direction);
+//                        speed.mulAdd(direction, dirX * 2 * dt);
+                    }
+                }
+                if (dirX == 0){
+                    speed.scl(0.8f);
+                }
+                break;
+
+        }
     }
 
     public void collisionResponse(BaseEntity other){
@@ -90,16 +137,12 @@ public class Player extends Character implements Disposable {
                 }
                 int groundIndex = getGround();
                 if (groundIndex != -1){
-                    direction.set(calcDirection());
+                    Gdx.app.log("Grounded", "now");
                     airState = Constants.airStates.GROUNDED;
-                    if (dirX == 0) {
-                        speed.set(0, 0);
-                    }
-                    else {
+                    if (dirX == 0){
+                        speed.set(0,0);
+                    } else
                         speed.y = 0;
-                    }
-                } else {
-                    airState = Constants.airStates.FALLING;
                 }
                 break;
             case Constants.LADDER:
@@ -109,69 +152,54 @@ public class Player extends Character implements Disposable {
         }
     }
 
-    public void calcSpeed(Constants.airStates airState, float dt){
-        if (moveLeft){
-            dirX = -1;
-            facingRight = false;
-        }
-        if (moveRight){
-            dirX = 1;
-            facingRight = true;
-        }
-        if ((moveLeft && moveRight) || (!moveRight && !moveLeft)){
-            dirX = 0;
-        }
-        switch (airState){
-            case GLIDING:
-                break;
-            case JUMPING:
-            case FALLING:
-                dirY = -1;
-                applyAirAccel(dt);
-                break;
-            case GROUNDED:
-                dirY = 0;
-                applyGroundAccel(dt);
-                break;
-        }
-    }
+//
+//
+//    public void applyGroundAccel(float dt){
+//              //TODO: fix grounded movement
+////            //Summary:
+////            //*  - get the direction or slope of the ground
+////            //*  - check if the player walks off the edge, OR if the player jumps
+////            //  - if the speed.len < Max run speed then add the acceleration
+////            //      acceleration = direction.scl(dirX * runImpulse * dt)
+////            //  - if the speed.len >= maxrunspeed, then the speed vector = direction.scale(dirX * maxrunspeed * dt
+//
+////        Gdx.app.log("direction", direction.toString());
+//        if (dirX != 0 && speed.len() < 2) {
+////            direction.set(walkDirection());
+////            speed.mulAdd(direction.scl(dirX), 5 * dt);
+//            speed.add(direction.scl(dirX * 5 * dt));
+//        }
+//        if (dirX == 0)
+//            speed.scl(0.5f);
+//
+//    }
+//
+//    public void applyAirAccel(float dt){
+//
+//        speed.y += -0.05f;
+//        if (speed.y <= -3f)
+//            speed.y = -3f;
+//        if (dirX == 0) {
+//            if (Math.abs(speed.x) <= 0.05f){
+//                speed.x = 0;
+//            }else {
+//                speed.x *= 0.8;
+//            }
+//        }
+//        if (dirX != 0 ){
+//            if (Math.abs(speed.x) <= 5){
+//                speed.x += dirX * 0.05f;
+//            } else {
+//                speed.x = dirX * 4f;
+//            }
+//        }
+//    }
 
-    public void applyGroundAccel(float dt){
-              //TODO: fix grounded movement
-//            //Summary:
-//            //*  - get the direction or slope of the ground
-//            //*  - check if the player walks off the edge, OR if the player jumps
-//            //  - if the speed.len < Max run speed then add the acceleration
-//            //      acceleration = direction.scl(dirX * runImpulse * dt)
-//            //  - if the speed.len >= maxrunspeed, then the speed vector = direction.scale(dirX * maxrunspeed * dt
-        direction.set(walkDirection());
-//        Gdx.app.log("direction", direction.toString());
-        if (speed.len() < 2)
-            speed.mulAdd(direction.scl(dirX), 5 * dt);
-        if (dirX == 0)
-            speed.scl(0.5f);
+    @Override
+    protected void debugDraw(ShapeRenderer sr){
+        super.debugDraw(sr);
 
-    }
 
-    public void applyAirAccel(float dt){
-
-        speed.y += -0.05f;
-        if (speed.y <= -3f)
-            speed.y = -3f;
-        if (dirX == 0) {
-            if (Math.abs(speed.x) <= 0.05f){
-                speed.x = 0;
-            }else {
-                speed.x *= 0.8;
-            }
-        }
-        if (dirX != 0 ){
-            if (Math.abs(speed.x) <= 5){
-                speed.x += dirX * 0.05f;
-            } else {
-                speed.x = dirX * 4f;
-            }
-        }
     }
 
     @Override
@@ -189,7 +217,7 @@ public class Player extends Character implements Disposable {
 
     public Vector2 getSpeed(){
 //        Gdx.app.log("speed", speed.toString());
-        return speed;
+        return this.speed;
     }
 
     public float getDirX(){

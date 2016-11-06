@@ -1,6 +1,5 @@
 package com.ninja.quest.Entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -29,7 +28,6 @@ public abstract class BaseEntity implements Disposable{
     protected Vector2 prevPos = new Vector2();
     Vector2 speed = new Vector2(0,0);
     protected Vector2 dirVec = new Vector2(0,0);
-//    Vector2 acceleration = new Vector2(0,0);
     private Rectangle bounds = new Rectangle();
     protected Polygon shape = new Polygon();
     private boolean isAlive;
@@ -48,22 +46,22 @@ public abstract class BaseEntity implements Disposable{
     protected BaseEntity(Polygon shape, Vector2 position, World world){
         this.shape = shape;
         this.world = world;
-        bounds = shape.getBoundingRectangle();
+        this.bounds = shape.getBoundingRectangle();
         resizeBounds();
 //        shape.translate(position.x, position.y);
-        pos = position;
-        isAlive = true;
+        this.pos = position;
+        this.isAlive = true;
     }
 
     public void resizeBounds(){
-        bounds.x -= Constants.PixPerTile / 2;
-        bounds.y -= Constants.PixPerTile / 2;
-        bounds.width += Constants.PixPerTile;
-        bounds.height += Constants.PixPerTile;
+        this.bounds.x -= Constants.PixPerTile / 2;
+        this.bounds.y -= Constants.PixPerTile / 2;
+        this.bounds.width += Constants.PixPerTile;
+        this.bounds.height += Constants.PixPerTile;
     }
 
     private void updateBounds(){
-        bounds = shape.getBoundingRectangle();
+        this.bounds = this.shape.getBoundingRectangle();
         resizeBounds();
     }
 
@@ -71,20 +69,20 @@ public abstract class BaseEntity implements Disposable{
         updateBounds();
     }
 
-    public void debugDraw(ShapeRenderer sr){
-        Vector2 tmp = pos.cpy().add(speed.cpy().scl(5));
-        sr.polygon(shape.getTransformedVertices());
+    protected void debugDraw(ShapeRenderer sr){
+        Vector2 tmp = this.pos.cpy().add(this.speed.cpy().scl(10));
+        sr.polygon(this.shape.getTransformedVertices());
         sr.set(ShapeRenderer.ShapeType.Line);
-        sr.line(pos, tmp);
+        sr.line(this.pos, tmp);
     }
 
-    public void boundsDraw(ShapeRenderer sr){
+    void boundsDraw(ShapeRenderer sr){
         if (this.isTouched){
             sr.setColor(Color.RED);
         } else {
             sr.setColor(Color.BLUE);
         }
-        sr.box(bounds.x, bounds.y, 0, bounds.getWidth(), bounds.getHeight(),0);
+        sr.box(this.bounds.x, this.bounds.y, 0, this.bounds.getWidth(), this.bounds.getHeight(),0);
     }
 
     protected void collisionResponse(BaseEntity other){}
@@ -119,7 +117,7 @@ public abstract class BaseEntity implements Disposable{
                 //test for collision with the object
                 //if the test passes, add it to the list of collisions
                 if (Intersector.overlapConvexPolygons(moveShape, temp.shape, this.MTV)) {
-                    Gdx.app.log("Collision", temp.shape.getBoundingRectangle().x + ", " + temp.shape.getBoundingRectangle().y + " " + this.pos.toString());
+//                    Gdx.app.log("Collision", temp.shape.getBoundingRectangle().x + ", " + temp.shape.getBoundingRectangle().y + " " + this.pos.toString());
                     this.collisionResponse(temp);
                     temp.collisionResponse(this);
                 }

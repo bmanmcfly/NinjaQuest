@@ -13,23 +13,31 @@ import com.badlogic.gdx.utils.Array;
  */
 
 //// TODO: 10/13/2016 add the ability to compensate for moveable terrain
+// TODO: 11/2/2016 in order to do this, will need to make the ground an entitiy whose position will
+//    be tied to the polygon, and an update function, then add a debug draw.
 //    ground will not be a visible layer
 public class Ground{
 
     private Array<Vector2> points = new Array<Vector2>();
-    private float[] verts;
-    private Vector2 pos = new Vector2();
 //    private Vector2 speed = new Vector2();
 
     public Ground(Array<Vector2> lines, float[] list, World world){
+//        float[] verts;
+        Vector2 pos = new Vector2();
         points.addAll(lines);
         pos.set(points.first());
-        verts = list;
+//        verts = list;
     }
 
     public Array<Vector2> getWalkPath(){
         return points;
     }
+
+//
+//    public void debugDraw(ShapeRenderer shapeRenderer){
+//
+//        shapeRenderer.polyline(points.toArray());
+//    }
 
 
 //    private boolean moveable = false;
@@ -51,10 +59,6 @@ public class Ground{
 //        //Will only update if it is a moveable one
 //    }
 //
-//    @Override
-//    public void debugDraw(ShapeRenderer shapeRenderer){
-//        shapeRenderer.polyline(verts);
-//    }
 //
 //    @Override
 //    public void draw() {
