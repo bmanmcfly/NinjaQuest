@@ -101,9 +101,17 @@ public class Player extends walkingChar implements Disposable {
         //get the movement speed for the player
         switch (airState){
             case JUMPING:
+                speed.y += -Constants.gravity * dt;
+                if (dirX != 0) {
+                    if (speed.x < 2 && speed.x > -2)
+                        speed.x += dirX * 3 * dt;
+                } else
+                    speed.x *= Constants.DAMPING;
+                break;
             case FALLING:
                 if (dirX != 0) {
-                    speed.x += dirX * 2 * dt;
+                    if (speed.x < 2 && speed.x > -2)
+                        speed.x += dirX * 3 * dt;
                 } else
                     speed.x *= Constants.DAMPING;
                 speed.y += -Constants.gravity * dt;
@@ -115,11 +123,14 @@ public class Player extends walkingChar implements Disposable {
                     if (speed.len() < 2){
                         direction.scl(dirX * 2 * dt);
                         speed.add(direction);
-//                        speed.mulAdd(direction, dirX * 2 * dt);
                     }
                 }
-                if (dirX == 0){
+                if (dirX == 0 || (dirX > 0 && speed.x < 0) || (dirX < 0 && speed.x > 0) ){
                     speed.scl(0.8f);
+                }
+                if (jumping){
+                    speed.y = 4f;
+                    walkPath = null;
                 }
                 break;
 
@@ -141,8 +152,12 @@ public class Player extends walkingChar implements Disposable {
                     airState = Constants.airStates.GROUNDED;
                     if (dirX == 0){
                         speed.set(0,0);
-                    } else
+                    } else {
                         speed.y = 0;
+                        direction.set(calcDirection().scl(speed.len() * dirX));
+                        speed.set(direction);
+                    }
+
                 }
                 break;
             case Constants.LADDER:
@@ -152,48 +167,6 @@ public class Player extends walkingChar implements Disposable {
         }
     }
 
-//
-//
-//    public void applyGroundAccel(float dt){
-//              //TODO: fix grounded movement
-////            //Summary:
-////            //*  - get the direction or slope of the ground
-////            //*  - check if the player walks off the edge, OR if the player jumps
-////            //  - if the speed.len < Max run speed then add the acceleration
-////            //      acceleration = direction.scl(dirX * runImpulse * dt)
-////            //  - if the speed.len >= maxrunspeed, then the speed vector = direction.scale(dirX * maxrunspeed * dt
-//
-////        Gdx.app.log("direction", direction.toString());
-//        if (dirX != 0 && speed.len() < 2) {
-////            direction.set(walkDirection());
-////            speed.mulAdd(direction.scl(dirX), 5 * dt);
-//            speed.add(direction.scl(dirX * 5 * dt));
-//        }
-//        if (dirX == 0)
-//            speed.scl(0.5f);
-//
-//    }
-//
-//    public void applyAirAccel(float dt){
-//
-//        speed.y += -0.05f;
-//        if (speed.y <= -3f)
-//            speed.y = -3f;
-//        if (dirX == 0) {
-//            if (Math.abs(speed.x) <= 0.05f){
-//                speed.x = 0;
-//            }else {
-//                speed.x *= 0.8;
-//            }
-//        }
-//        if (dirX != 0 ){
-//            if (Math.abs(speed.x) <= 5){
-//                speed.x += dirX * 0.05f;
-//            } else {
-//                speed.x = dirX * 4f;
-//            }
-//        }
-//    }
 
     @Override
     protected void debugDraw(ShapeRenderer sr){

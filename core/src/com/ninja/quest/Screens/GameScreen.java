@@ -136,6 +136,7 @@ public class GameScreen implements Screen {
                 "\nLine Start" + world.getPlayer().getLineStart().toString() +
                 "\nLine End" + world.getPlayer().getLineEnd().toString() +
                 "\nLine Index" + world.getPlayer().getLineIndex() +
+                "\nLine End Index" + world.getPlayer().getLineEndIndex() +
                 "\nGround Start" + world.getPlayer().getGroundStart().toString() +
                 "\nGround End" + world.getPlayer().getGroundEnd().toString() +
                 "\nFoot" + world.getPlayer().getFoot().toString(), markerPos.x, markerPos.y);

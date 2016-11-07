@@ -24,7 +24,7 @@ public abstract class walkingChar extends BaseEntity {
 
     //Variables related to Grounded state when not grounded walkpath == null
     protected Array<Vector2> walkPath = new Array<Vector2>();
-    protected int lineIndex;
+    protected int lineIndex, lineEndIndex;
     protected Vector2 lineStart = new Vector2();
     protected Vector2 lineEnd = new Vector2();
     protected Vector2 groundStart = new Vector2();
@@ -51,7 +51,7 @@ public abstract class walkingChar extends BaseEntity {
     protected walkingChar(Polygon shape, Vector2 position, World world) {
         super(shape, position, world);
         walkPath = null;
-        ground = world.getGround();
+        ground.addAll(world.getGround());
         updateVerts();
     }
 
@@ -75,8 +75,8 @@ public abstract class walkingChar extends BaseEntity {
         sr.circle(botRight.x, botRight.y, 2);
         sr.circle(pos.x, pos.y, 2);
         sr.setColor(Color.LIME);
-        sr.circle(lineStart.x, lineStart.y, 2);
-        sr.circle(lineEnd.x, lineEnd.y, 2);
+        sr.circle(lineStart.x, lineStart.y, 3);
+        sr.circle(lineEnd.x, lineEnd.y, 3);
 
     }
 
@@ -87,7 +87,8 @@ public abstract class walkingChar extends BaseEntity {
     }
 
     void updateLine(float dt, float dir) {
-        boolean getLine = false;
+        boolean prevLine = false;
+        boolean nextLine = false;
         /**
          * The way this one will work :
          * - if the player is moving
@@ -103,26 +104,59 @@ public abstract class walkingChar extends BaseEntity {
          *
          */
         if (dir == 0) return;
-        if (dir <= 0) {
-            if (Math.abs(lineStart.x - foot.x + speed.x * dt) <= Constants.TOLERANCE &&
-                    Math.abs(lineStart.y - foot.y + speed.y * dt) <= Constants.TOLERANCE) {
+        if (dir < 0) {
+            if (foot.x + speed.x * dt <= lineStart.x) {
+                //lets assume that the y value will be correct find out later if that causes grief
                 Gdx.app.log("Get Prev Line ", Integer.toString(lineIndex));
                 if (lineIndex > 0) {
+                    foot.set(lineStart.x, lineStart.y);
+                    updateVerts();
                     lineIndex--;
-                    getLine = true;
+                    lineEndIndex--;
+                    Gdx.app.log("lineIndex " + Integer.toString(lineIndex), "lineEndIndex " + Integer.toString(lineEndIndex));
+                    prevLine = true;
                 }
                 if (lineIndex == 0) {
-                    if (Math.abs(lineStart.x - botRight.x + speed.x * dt) <= Constants.TOLERANCE &&
-                            Math.abs(lineStart.y - botRight.y + speed.y * dt) <= Constants.TOLERANCE) {
+                    if (botRight.x + speed.x * dt <= groundStart.x) {
                         //walk off edge
                         walkOffEdge();
                     }
                 }
             }
         }
-        if (getLine) {
-            lineEnd.set(lineStart.x, lineStart.y);
-            lineStart.set(walkPath.get(lineIndex).x, walkPath.get(lineIndex).y);
+        if (dir > 0){
+            if (foot.x + speed.x * dt >= lineEnd.x){
+                //lets assume that the y value will be correct find out later if that causes grief
+                Gdx.app.log("Get Next Line ", Integer.toString(lineIndex));
+//                Gdx.app.log("walkpath ", Integer.toString(walkPath.size));
+                if (lineEndIndex < walkPath.size - 1){
+                    foot.set(lineEnd.x, lineEnd.y);
+                    updateVerts();
+                    lineIndex++;
+                    lineEndIndex++;
+                    Gdx.app.log("lineIndex ", Integer.toString(lineIndex));
+                    prevLine = true;
+                }
+                if (lineEndIndex == walkPath.size - 1){
+                    if (pos.x + speed.x * dt >= groundEnd.x){
+                        walkOffEdge();
+                    }
+                }
+            }
+        }
+        if (prevLine) {
+            float startX = walkPath.get(lineIndex).x;
+            float startY = walkPath.get(lineIndex).y;
+            float endX = walkPath.get(lineEndIndex).x;
+            float endY = walkPath.get(lineEndIndex).y;
+
+            Gdx.app.log(Float.toString(startX) + " " + Float.toString(startY), Float.toString(endX) + " " + Float.toString(endY));
+            lineEnd.set(endX, endY);
+            lineStart.set(startX, startY);
+            Vector2 tmp = calcDirection();
+            float spd = speed.len() * dir;
+            speed.set(tmp.x * spd, tmp.y * spd);
+            Gdx.app.log("linestart " + lineStart.toString(), "lineEnd " + lineEnd.toString());
         }
 
     }
@@ -131,13 +165,14 @@ public abstract class walkingChar extends BaseEntity {
         /**This one works, be careful of changes*/
         if (walkPath == null) {
             for (int j = 0; j < ground.size; j++) {
-                sections = ground.get(j).getWalkPath();
+                sections.clear();
+                sections.addAll(ground.get(j).getWalkPath());
                 if (foot.x < sections.first().x) continue;
                 if (foot.x > sections.get(sections.size - 1).x) continue;
 //                Gdx.app.log("Foot", "between ground " + j);
                 for (int i = 0; i < sections.size - 1; i++) {
-                    lineStart = sections.get(i);
-                    lineEnd = sections.get(i + 1);
+                    lineStart.set(sections.get(i));
+                    lineEnd.set(sections.get(i + 1));
                     if (lineStart.x < foot.x && foot.x < lineEnd.x) {
 //                        Gdx.app.log("Testing; p1", p1.toString() +", foot:"+ foot.toString() + ", p2"+ p2.toString());
                         if (Intersector.distanceSegmentPoint(lineStart, lineEnd, foot) < Constants.TOLERANCE) {
@@ -147,9 +182,11 @@ public abstract class walkingChar extends BaseEntity {
                             updateVerts();
                             Gdx.app.log("foot: " + foot.toString(), "nearest: " + nearestPoint.toString());
                             walkPath = sections;
+                            Gdx.app.log("walkpath ", Integer.toString(walkPath.size));
                             groundStart.set(walkPath.first().x, walkPath.first().y);
                             groundEnd.set(walkPath.get(walkPath.size - 1).x, walkPath.get(walkPath.size - 1).y);
                             lineIndex = i;
+                            lineEndIndex = i + 1;
                             return i;
                         }
                     }
@@ -179,6 +216,10 @@ public abstract class walkingChar extends BaseEntity {
 
     public int getLineIndex() {
         return lineIndex;
+    }
+
+    public int getLineEndIndex() {
+        return lineEndIndex;
     }
 
     public Vector2 getLineStart() {
