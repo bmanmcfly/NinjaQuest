@@ -7,8 +7,10 @@ import com.badlogic.gdx.InputProcessor;
  * Created by Bman on 27/02/2016.
  *
  * The input class
- * TODO: part 1 -- make this the full controls for the player
+ * DONE: part 1 -- make this the full controls for the player
  * TODO: part 2 -- determine if the app is being played on pc or android and send to the appropriate class
+ * todo: part 2 will allow the controls to be determined at runtime, will just have to create equivalents to
+ * flip the boolean flags
  *
  * **Change - Instead of rolling my own input processor, change things to use a libgdx version **
  */
@@ -33,11 +35,13 @@ public class Input implements InputProcessor {
                 right = true;
                 break;
             case com.badlogic.gdx.Input.Keys.UP:
-                jump = true;
                 climbUp = true;
                 break;
             case com.badlogic.gdx.Input.Keys.DOWN:
                 climbDown = true;
+                break;
+            case com.badlogic.gdx.Input.Keys.SPACE:
+                jump = true;
                 break;
             case com.badlogic.gdx.Input.Keys.A:
                 attack = true;
@@ -61,6 +65,9 @@ public class Input implements InputProcessor {
             case com.badlogic.gdx.Input.Keys.UP:
                 jump = false;
                 climbUp = false;
+                break;
+            case com.badlogic.gdx.Input.Keys.SPACE:
+                jump = false;
                 break;
             case com.badlogic.gdx.Input.Keys.DOWN:
                 climbDown = false;
@@ -151,33 +158,3 @@ public class Input implements InputProcessor {
         return false;
     }
 }
-
-
-//    public static void update(){
-//        moveForce = 0;
-//        if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.LEFT)){
-//            moveForce -= 5;
-//        }
-//        if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.RIGHT)){
-//            moveForce += 5;
-//        }
-//
-//        jumpForce = 0;
-//        if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.UP)){
-//            jumpForce = 10;
-//        }
-//
-//        if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.DOWN)){
-//            jumpForce = -10;
-//        }
-//
-//        glide = 0;
-//        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.SPACE)){
-//            glide = 10;
-//        }
-//
-//
-//
-//    }
-//
-//}

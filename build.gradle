@@ -87,6 +87,8 @@ project(":core") {
         compile "de.tomgrill.gdxdialogs:gdx-dialogs-core:1.0.0"
         compile "de.tomgrill.gdxfacebook:gdx-facebook-core:1.1.1"
         compile "com.github.czyzby:gdx-kiwi:1.5.1.9.2"
+//        compile "aurelienribon:tweenengine:6.3.3"
+//        compile "aurelienribon:tweenengine:6.3.3:sources"
         compile fileTree(dir: '../libs', include: '*.jar')
     }
 }

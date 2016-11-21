@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.ninja.quest.Constants.Constants;
 import com.ninja.quest.Utils.MapParser;
 
 /**
@@ -18,16 +17,16 @@ import com.ninja.quest.Utils.MapParser;
  * TODO: Complete this list; - means todo, * means done
  * Needs to :
  *  * Initialize: this will load all the various entities from the maploader (add a maploader reference)
- *  - Render: Could use this class to go through and call the rendering for the world (might need the spritebatch)
- *  - Debug Render: call the debug render for each class (might need the shape renderer)
- *  - update: call the update for the entities (might need to shift the camera to the world)
- *  - Add: Add entities will be used to add entities to loop through, this will be useful for enemy spawns
- *  - AddALL: This will tie into the initialize method, after each type of entity is loaded just add all
- *  - getEntities: returns the list of all the entitie
- *  - getNumEntities: counts through all the entities
- *  - getNumEntities(filter): will sort through the "entity is" member to count the entities of a given type
- *  - remove: This will remove any item flagged for removal
- *  - clear: This will empty the array
+ *  todo: - Render: Could use this class to go through and call the rendering for the world (might need the spritebatch)
+ *  * Debug Render: call the debug render for each class (might need the shape renderer)
+ *  todo: - update: call the update for the entities (might need to shift the camera to the world)
+ *  todo: - Add: Add entities will be used to add entities to loop through, this will be useful for enemy spawns
+ *  todo: - AddALL: This will tie into the initialize method, after each type of entity is loaded just add all
+ *  todo: - getEntities: returns the list of all the entitie
+ *  todo: - getNumEntities: counts through all the entities
+ *  todo: - getNumEntities(filter): will sort through the "entity is" member to count the entities of a given type
+ *  todo: - remove: This will remove any item flagged for removal
+ *  todo: - clear: This will empty the array
  */
 public class World {
     private Array<BaseEntity> entityArray = new Array<BaseEntity>();
@@ -67,9 +66,10 @@ public class World {
     }
 
     public void update(float delta){
+        // TODO: 11/9/2016 get the world to update all entities that have update methods
         for (BaseEntity b: entityArray){
-            switch (b.entityIs){
-                case Constants.PLAYER:
+            switch (b.entityIsA){
+                case PLAYER:
                     b.update(delta, entityArray);
                     break;
 //                case Constants.E_BULLET:

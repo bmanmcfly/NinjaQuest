@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.ninja.quest.Constants.Constants;
 
+import java.util.EnumSet;
+
 /**
  * Created by Bman on 8/6/2016.
  *
@@ -37,6 +39,8 @@ public abstract class BaseEntity implements Disposable{
 
     protected short entityIs;
     short collidesWith;
+    protected Constants.CollisionFlags entityIsA;
+    protected EnumSet<Constants.CollisionFlags> entityCollidesWith;
 
     //image and state
     protected Sprite sprite = new Sprite();
@@ -107,12 +111,17 @@ public abstract class BaseEntity implements Disposable{
         moveShape.translate(this.speed.x, this.speed.y);
         for(int i = 0; i < size; i++) {
             BaseEntity temp = things.get(i);
-            short thisTest = temp.entityIs;
-            if (thisTest == this.entityIs) continue;
+//            short thisTest = temp.entityIs;
+            Constants.CollisionFlags testFlag = temp.entityIsA;
+//            if (thisTest == this.entityIs) continue;
+            if (testFlag == this.entityIsA) continue;
             // First, get the speed of both entities.  get the dot product between both speeds
-            temp.isTouched = (thisTest & this.collidesWith) == 0 &&
-                    Intersector.overlaps(temp.bounds, this.bounds);
+//            temp.isTouched = (thisTest & this.collidesWith) == 0 &&
+//                    Intersector.overlaps(temp.bounds, this.bounds);
+            temp.isTouched = (this.entityCollidesWith.contains(testFlag) &&
+                    Intersector.overlaps(temp.bounds, this.bounds));
             if (temp.isTouched) {
+//                if (testFlag == LADDER) Gdx.app.log("Test", "Ladder");
                 //now, move this to its next position,
                 //test for collision with the object
                 //if the test passes, add it to the list of collisions

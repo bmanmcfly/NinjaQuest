@@ -1255,8 +1255,8 @@
   </object>
  </objectgroup>
  <objectgroup name="Ladders">
-  <object id="78" x="768" y="760">
-   <polygon points="32,0 64,0 64,-448.625 32,-448.625"/>
+  <object id="78" x="792" y="760">
+   <polygon points="16,0 32,0 32,-448.625 16,-448.625"/>
   </object>
   <object id="80" x="1504" y="544" width="64" height="64">
    <ellipse/>

@@ -1,7 +1,6 @@
 package com.ninja.quest.Entities;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
@@ -44,8 +43,9 @@ public abstract class walkingChar extends BaseEntity {
     protected Vector2 lHand = new Vector2();
     protected Vector2 botRight = new Vector2();
     //TODO: add sensor to detect what enemies are on the screen, enemies off the screen by more than 1 square will be in a wait state
-//    TODO: Fix the way that characters walk on the ground, so that the character walks along the ground
+//    Done: Fix the way that characters walk on the ground, so that the character walks along the ground
     protected boolean facingRight = true;
+    protected float jumpHeight = 0f;
 
 
     protected walkingChar(Polygon shape, Vector2 position, World world) {
@@ -107,13 +107,13 @@ public abstract class walkingChar extends BaseEntity {
         if (dir < 0) {
             if (foot.x + speed.x * dt <= lineStart.x) {
                 //lets assume that the y value will be correct find out later if that causes grief
-                Gdx.app.log("Get Prev Line ", Integer.toString(lineIndex));
+//                Gdx.app.log("Get Prev Line ", Integer.toString(lineIndex));
                 if (lineIndex > 0) {
                     foot.set(lineStart.x, lineStart.y);
                     updateVerts();
                     lineIndex--;
                     lineEndIndex--;
-                    Gdx.app.log("lineIndex " + Integer.toString(lineIndex), "lineEndIndex " + Integer.toString(lineEndIndex));
+//                    Gdx.app.log("lineIndex " + Integer.toString(lineIndex), "lineEndIndex " + Integer.toString(lineEndIndex));
                     prevLine = true;
                 }
                 if (lineIndex == 0) {
@@ -127,14 +127,14 @@ public abstract class walkingChar extends BaseEntity {
         if (dir > 0){
             if (foot.x + speed.x * dt >= lineEnd.x){
                 //lets assume that the y value will be correct find out later if that causes grief
-                Gdx.app.log("Get Next Line ", Integer.toString(lineIndex));
+//                Gdx.app.log("Get Next Line ", Integer.toString(lineIndex));
 //                Gdx.app.log("walkpath ", Integer.toString(walkPath.size));
                 if (lineEndIndex < walkPath.size - 1){
                     foot.set(lineEnd.x, lineEnd.y);
                     updateVerts();
                     lineIndex++;
                     lineEndIndex++;
-                    Gdx.app.log("lineIndex ", Integer.toString(lineIndex));
+//                    Gdx.app.log("lineIndex ", Integer.toString(lineIndex));
                     prevLine = true;
                 }
                 if (lineEndIndex == walkPath.size - 1){
@@ -150,13 +150,13 @@ public abstract class walkingChar extends BaseEntity {
             float endX = walkPath.get(lineEndIndex).x;
             float endY = walkPath.get(lineEndIndex).y;
 
-            Gdx.app.log(Float.toString(startX) + " " + Float.toString(startY), Float.toString(endX) + " " + Float.toString(endY));
+//            Gdx.app.log(Float.toString(startX) + " " + Float.toString(startY), Float.toString(endX) + " " + Float.toString(endY));
             lineEnd.set(endX, endY);
             lineStart.set(startX, startY);
             Vector2 tmp = calcDirection();
             float spd = speed.len() * dir;
             speed.set(tmp.x * spd, tmp.y * spd);
-            Gdx.app.log("linestart " + lineStart.toString(), "lineEnd " + lineEnd.toString());
+//            Gdx.app.log("linestart " + lineStart.toString(), "lineEnd " + lineEnd.toString());
         }
 
     }
@@ -180,9 +180,9 @@ public abstract class walkingChar extends BaseEntity {
                             Intersector.nearestSegmentPoint(lineStart, lineEnd, foot, nearestPoint);
                             pos.set(foot.x - shape.getBoundingRectangle().width / 2, nearestPoint.y);
                             updateVerts();
-                            Gdx.app.log("foot: " + foot.toString(), "nearest: " + nearestPoint.toString());
+//                            Gdx.app.log("foot: " + foot.toString(), "nearest: " + nearestPoint.toString());
                             walkPath = sections;
-                            Gdx.app.log("walkpath ", Integer.toString(walkPath.size));
+//                            Gdx.app.log("walkpath ", Integer.toString(walkPath.size));
                             groundStart.set(walkPath.first().x, walkPath.first().y);
                             groundEnd.set(walkPath.get(walkPath.size - 1).x, walkPath.get(walkPath.size - 1).y);
                             lineIndex = i;
@@ -196,7 +196,7 @@ public abstract class walkingChar extends BaseEntity {
         return -1;
     }
 
-    public Vector2 calcDirection(){
+    Vector2 calcDirection(){
         Vector2 temp = lineEnd.cpy();
         dirVec = temp.sub(lineStart.cpy());
         dirVec.nor();
@@ -204,7 +204,7 @@ public abstract class walkingChar extends BaseEntity {
         return dirVec;
     }
 
-    public void walkOffEdge(){
+    void walkOffEdge(){
         //once the player has walked off the edge
         walkPath = null;
         airState = Constants.airStates.FALLING;

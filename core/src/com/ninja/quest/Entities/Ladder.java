@@ -4,6 +4,12 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
+import java.util.EnumSet;
+
+import static com.ninja.quest.Constants.Constants.CollisionFlags.ENEMY;
+import static com.ninja.quest.Constants.Constants.CollisionFlags.LADDER;
+import static com.ninja.quest.Constants.Constants.CollisionFlags.PLAYER;
+
 /**
  * Created by Bman on 17/07/2016.
  *
@@ -27,30 +33,10 @@ public class Ladder extends BaseEntity implements Disposable {
     }
     public Ladder(Polygon shape, Vector2 initPos, World world) {
         super(shape, initPos, world);
+//        entityIs = Constants.LADDER;
+//        collidesWith = Constants.PLAYER;
+        entityIsA = LADDER;
+        entityCollidesWith = EnumSet.of(PLAYER, ENEMY);
     }
-//
-//    @Override
-//    public void update(float dt) {
-//
-//    }
-//
-//    @Override
-//    public void updateVertices() {
-//
-//    }
-//
-//    @Override
-//    public void draw() {
-//
-//    }
-//
-//    @Override
-//    public Vector2 getPos() {
-//        return body.getPos();
-//    }
-//
-//    @Override
-//    public void resolveCollision(Vector2 adjust) {
-//        //ladders don't need to resolve collisions
-//    }
+
 }
