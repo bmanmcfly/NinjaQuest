@@ -33,8 +33,8 @@ public abstract class walkingChar extends BaseEntity {
     protected Array<Vector2> sections = new Array<Vector2>();
 
     //States
-    protected Constants.airStates airState;
-    protected Constants.states state;
+    protected Constants.airStates airState, prevAirState;
+    protected Constants.states state, prevState;
 
     //Sensor points
     protected Vector2 head = new Vector2();
@@ -226,6 +226,7 @@ public abstract class walkingChar extends BaseEntity {
         return lineStart;
     }
 
+    public boolean isFacingRight() { return facingRight; }
 
     public Vector2 getLineEnd() {
         return lineEnd;

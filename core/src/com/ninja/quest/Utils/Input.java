@@ -10,6 +10,7 @@ import com.badlogic.gdx.InputProcessor;
  * DONE: part 1 -- make this the full controls for the player
  * TODO: part 2 -- determine if the app is being played on pc or android and send to the appropriate class
  * todo: part 2 will allow the controls to be determined at runtime, will just have to create equivalents to
+ * TODO: add code to flip the boolean switches from touch / mouse controls this will allow more to show off
  * flip the boolean flags
  *
  * **Change - Instead of rolling my own input processor, change things to use a libgdx version **

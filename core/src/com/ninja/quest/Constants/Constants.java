@@ -34,7 +34,7 @@ public class Constants {
     public static final float MAX_JUMP_HEIGHT = 1.2f;
     public static final float TOLERANCE = 2f;
     public static final float RUN_IMPULSE = 1f * PixPerTile;// * 60;
-    public static final float MAX_RUN_SPEED = 2f; //2 tiles * 60 fps forced
+    public static final float MAX_RUN_SPEED = 4f; //2 tiles * 60 fps forced
     public static final float DAMPING = 0.25f;
     public static final float SLOW_DAMPING = 0.8f;
 
@@ -45,23 +45,11 @@ public class Constants {
     }
 
     public enum airStates{
-        JUMPING, FALLING, GLIDING, GROUNDED
+        JUMPING, FALLING, GLIDING, CLIMBING, GROUNDED
     }
 
-    //The collision type will be set at the creation of an object and will help sort how
-    //collisions will be handled or ignored.
-//    public static final short NONE = 0;
-//    public static final short PLAYER = 1;
-//    public static final short TERRAIN = 2;
-//    public static final short ENEMY = 4;
-//    public static final short P_BULLET = 8;
-//    public static final short E_BULLET = 16;
-//    public static final short LADDER = 32;
-//    public static final short SENSOR = 64;
-//    public static final short ALL = 128;
-
     public enum CollisionFlags {
-        PLAYER, TERRAIN, ENEMY, P_BULLET, E_BULLET, LADDER, SENSOR;
+        PLAYER, TERRAIN, ENEMY, SWORD, P_BULLET, E_BULLET, LADDER, SENSOR, BRAKEABLE_OJBECT;
 
         public static EnumSet<CollisionFlags> ALL = EnumSet.allOf(CollisionFlags.class);
         public static EnumSet<CollisionFlags> NONE = EnumSet.noneOf(CollisionFlags.class);

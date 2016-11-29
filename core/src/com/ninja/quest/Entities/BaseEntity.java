@@ -37,8 +37,8 @@ public abstract class BaseEntity implements Disposable{
 //    protected Array<Vector2> prePoints = new Array<Vector2>();
 //    protected Array<Vector2> otherPoints = new Array<Vector2>();
 
-    protected short entityIs;
-    short collidesWith;
+//    protected short entityIs;
+//    short collidesWith;
     protected Constants.CollisionFlags entityIsA;
     protected EnumSet<Constants.CollisionFlags> entityCollidesWith;
 
@@ -136,7 +136,8 @@ public abstract class BaseEntity implements Disposable{
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("ID").append(Short.toString(this.entityIs));
+        sb.append("ID: ").append(entityIsA.name());
+//        sb.append("ID").append(Short.toString(this.entityIs));
         sb.append("\nPosition :").append(this.pos);
         sb.append("\nSpeed: ").append(this.speed);
         sb.append("\nis Touched").append(Boolean.toString(this.isTouched));
@@ -186,15 +187,15 @@ public abstract class BaseEntity implements Disposable{
         this.shape = shape;
     }
 
-    public short getEntityIs() {
-        return this.entityIs;
-    }
+//    public short getEntityIs() {
+//        return this.entityIs;
+//    }
 
 
-    public short getCollidesWith() {
-        return this.collidesWith;
-    }
-
+//    public short getCollidesWith() {
+//        return this.collidesWith;
+//    }
+//
     public Constants.airStates getAirState() {
         return this.airState;
     }

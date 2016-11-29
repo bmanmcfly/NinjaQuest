@@ -15,6 +15,8 @@ import static com.ninja.quest.Constants.Constants.CollisionFlags.P_BULLET;
  * Created by Bman on 11/07/2016.
  *
  * I realized that it will be easier to turn the terrain into entities
+ *
+ * TODO: add moveable terrain and jump through terrain
  */
 public class Terrain extends BaseEntity {
     public Terrain(Polygon shape, Vector2 initPos, World world) {
@@ -24,6 +26,8 @@ public class Terrain extends BaseEntity {
         entityIsA = Constants.CollisionFlags.TERRAIN;
         entityCollidesWith = EnumSet.of(PLAYER, ENEMY, P_BULLET, E_BULLET);
     }
+
+
     public void dispose() {
 
     }
