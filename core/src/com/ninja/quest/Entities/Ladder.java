@@ -26,11 +26,14 @@ import static com.ninja.quest.Constants.Constants.CollisionFlags.PLAYER;
  * If the player reaches the top of the ladder, or the bottom, set the walk path to the one at the top of the ladder, and treat the
  * player as grounded.
  */
+
+// TODO: 12/1/2016 - Make sure that the player can only climb a ladder while it is in contact with the ladder
 public class Ladder extends BaseEntity implements Disposable {
     @Override
     public void dispose() {
 
     }
+
     public Ladder(Polygon shape, Vector2 initPos, World world) {
         super(shape, initPos, world);
 //        entityIs = Constants.LADDER;

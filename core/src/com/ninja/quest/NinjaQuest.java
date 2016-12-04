@@ -1,7 +1,5 @@
 package com.ninja.quest;
 
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenManager;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -15,7 +13,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.ninja.quest.Constants.Constants;
-import com.ninja.quest.Utils.SpriteTween;
+import com.ninja.quest.Utils.Tweeners.SpriteTween;
+
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenManager;
 //import com.ninja.quest.Fonts.Fonts;
 
 public class NinjaQuest extends Game {

@@ -1,4 +1,4 @@
-package com.ninja.quest.Utils;
+package com.ninja.quest.Utils.Tweeners;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
@@ -32,7 +32,7 @@ public class SpriteTween implements TweenAccessor<Sprite> {
                 target.setPosition(newValues[0], newValues[1]);
                 break;
             default:
-                assert false;
+                assert false; break;
         }
     }
 }

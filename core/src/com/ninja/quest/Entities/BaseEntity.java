@@ -127,6 +127,8 @@ public abstract class BaseEntity implements Disposable{
                 //if the test passes, add it to the list of collisions
                 if (Intersector.overlapConvexPolygons(moveShape, temp.shape, this.MTV)) {
 //                    Gdx.app.log("Collision", temp.shape.getBoundingRectangle().x + ", " + temp.shape.getBoundingRectangle().y + " " + this.pos.toString());
+                    //Might need to setup some flags here in order to be sure that if the player and ladder, or other cases where
+                    //an end contact may be required by testing which two objects are here.
                     this.collisionResponse(temp);
                     temp.collisionResponse(this);
                 }

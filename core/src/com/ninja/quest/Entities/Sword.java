@@ -20,6 +20,9 @@ import static com.ninja.quest.Constants.Constants.CollisionFlags.P_BULLET;
  *
  *
  * TODO: Make sure the sword gets created and destroyed appropriately
+ * todo: a sword will break / cancel other swords and projectiles
+ *
+ *
  */
 public class Sword extends BaseEntity{
     Constants.CollisionFlags creator;

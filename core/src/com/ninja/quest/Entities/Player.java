@@ -37,7 +37,7 @@ public class Player extends walkingChar implements Disposable {
     private int frameCount = 0;
     //Controls
     private boolean moveLeft = false, moveRight = false, jumping = false, gliding = false;
-    private boolean climbing = false, attack = false, shooting = false;
+    private boolean canClimb = false, climbing = false, attack = false, shooting = false;
     Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape, World world) {
         super(shape, initPos, world);
 //        sb = batch;
@@ -88,6 +88,17 @@ public class Player extends walkingChar implements Disposable {
     }
 
     private Constants.airStates updateAirState(){
+        /**
+         *  Possible airstates:
+         *      - Grounded :
+         *          * Idle :
+         *          * Walking :
+         *          * Sliding :
+         *      - Airborne :
+         *          * Jumping :
+         *          * Falling :
+         *          * Gliding :
+         */
         if (walkPath == null){
             if (speed.y > 0) {
                 airState = Constants.airStates.JUMPING;
@@ -95,6 +106,10 @@ public class Player extends walkingChar implements Disposable {
             }
             if (speed.y <= 0 && airState != Constants.airStates.GLIDING){
                 airState = Constants.airStates.FALLING;
+                if (gliding){
+                    //start gliding
+                    airState = Constants.airStates.GLIDING;
+                }
 //                Gdx.app.log("airstate", "Falling");
             }
         }else {
@@ -105,6 +120,16 @@ public class Player extends walkingChar implements Disposable {
     }
 
     private Constants.states updateState(float dt){
+        /** States:
+         *  CLIMB : If in collision with a ladder and presses climb up or climb down
+         *  THROW : Slows to stop creates and projectiles, breaks jump / glide to falling
+         *  ATTACK : if grounded slow to a stop, create sword on side facing, breaks jump / glide to falling
+         *  IDLE : 2 seconds or so of nothing
+         *  WALKING ; Done --  can jump, fall, be hit, slide,
+         *  SLIDE : walking flat or downhill at half speed or more, can fall, jump, atk and throw
+         *  HIT : fly backwards a half jump backwards, todo when there are enemies around
+         *  DYING : save this for dying animation, lose a life and reload at the previous checkpoint
+        */
         if (airState == Constants.airStates.GROUNDED) {
             if (dirX == 0) {
                 if (idleTimer > 250 && !attack || !jumping) {
@@ -152,6 +177,7 @@ public class Player extends walkingChar implements Disposable {
             case JUMPING:
             case FALLING:
                 /** Vertical motion first */
+                // TODO: 12/2/2016 Convert the change in speeds to X and Y to tweens
                 if (jumping && jumpHeight < Constants.MAX_JUMP_HEIGHT) {
                     speed.y = Constants.JUMP_IMPULSE;
                     jumpHeight += speed.y * dt;
@@ -162,7 +188,10 @@ public class Player extends walkingChar implements Disposable {
                 }
                 if (speed.y < -Constants.MAX_FALL_SPEED)
                     speed.y = -Constants.gravity * dt;
+            case GLIDING:
+                if (speed.y < -Constants.MAX_FALL_SPEED / 4){
 
+                }
                 /** Horizontal motion */
                 //DONE: fix the algorithm here
                 //this is airborn, when facing the direction moving (facingright and dirx > 0 or opposite) then it will be the normal accelleration
@@ -249,6 +278,7 @@ public class Player extends walkingChar implements Disposable {
                 break;
             case LADDER:
                 Gdx.app.log("Touching ladder", "");
+
                 // TODO: 11/9/2016 make it so the player can climb the ladder
                 // To climb a ladder:
                 // 1 - make sure the head or foot is within the ladder

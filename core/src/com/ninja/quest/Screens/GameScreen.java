@@ -18,6 +18,8 @@ import com.ninja.quest.Entities.World;
 import com.ninja.quest.NinjaQuest;
 import com.ninja.quest.Utils.Input;
 import com.ninja.quest.Utils.MapParser;
+
+import aurelienribon.tweenengine.TweenManager;
 //import com.ninja.quest.Utils.collisionHandler;
 
 /**
@@ -43,6 +45,7 @@ public class GameScreen implements Screen {
     private ShapeRenderer sr;
     private Input input = new Input();
     private World world;
+    private TweenManager tweenManager;
 
     private float time = 0.0f;
     private final float step = 1 / 120.0f;
@@ -58,6 +61,13 @@ public class GameScreen implements Screen {
 
     public GameScreen(NinjaQuest game) {
         this.game = game;
+    }
+
+    /**
+     * Called when this screen becomes the current screen for a {@link Game}.
+     */
+    @Override
+    public void show() {
         Gdx.input.setInputProcessor(input);
         cam = new myOrthoCam();
         cam.setToOrtho(false, Constants.ScreenWidth, Constants.ScreenHeight);
@@ -79,14 +89,7 @@ public class GameScreen implements Screen {
         Constants.mapWidth = Float.parseFloat(map.getProperties().get("width").toString()) * Constants.PixPerTile;
         Constants.mapHeight = Float.parseFloat(map.getProperties().get("height").toString()) * Constants.PixPerTile;
         sr = new ShapeRenderer();
-    }
-
-    /**
-     * Called when this screen becomes the current screen for a {@link Game}.
-     */
-    @Override
-    public void show() {
-
+        tweenManager = new TweenManager();
     }
 
     public void update(float delta){
@@ -98,9 +101,11 @@ public class GameScreen implements Screen {
         time += delta;
         while (time > step){
 //            Gdx.app.log("time" + time, "step" + step);
+            tweenManager.update(step);
             world.update(step);
             time -= step;
         }
+        tweenManager.update(time);
         world.update(time); //update with the remaineder of the time to the next frame
 //        Gdx.app.log("Interpolation frame", Float.toString(time));
         cam.displacement(world.getPlayer().getPos().x, world.getPlayer().getPos().y, map);
