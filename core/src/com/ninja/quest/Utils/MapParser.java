@@ -1,3 +1,4 @@
+
 package com.ninja.quest.Utils;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,7 +16,7 @@ import com.ninja.quest.Entities.Ladder;
 import com.ninja.quest.Entities.Terrain;
 import com.ninja.quest.Entities.World;
 
-/**
+/** 11/29/2016 - Changed hero polygon so that the player is more likely to hit the ground
  * Created by Bman on 27/02/2016.
  *
  * The map parser is to load things like collision layers,
@@ -151,7 +152,7 @@ public class MapParser{
 
     public Polygon buildHero(Vector2 position){
         Polygon polygon = new Polygon();
-        float[] verts = {Constants.PLAYER_WIDTH / 2, 0,
+        float[] verts = {Constants.PLAYER_WIDTH * (0.25f), 0, Constants.PLAYER_WIDTH * (0.75f), 0,
                         Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT * (3f/8f),
                         Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT * (5f/8f),
                         Constants.PLAYER_WIDTH * (5f/8f), Constants.PLAYER_HEIGHT,
