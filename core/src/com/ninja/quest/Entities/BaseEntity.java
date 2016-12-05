@@ -198,6 +198,87 @@ public abstract class BaseEntity implements Disposable{
 //        return this.collidesWith;
 //    }
 //
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public Intersector.MinimumTranslationVector getMTV() {
+        return MTV;
+    }
+
+    public void setMTV(Intersector.MinimumTranslationVector MTV) {
+        this.MTV = MTV;
+    }
+
+    public void setPrevPos(Vector2 prevPos) {
+        this.prevPos = prevPos;
+    }
+
+    public void setSpeed(Vector2 speed) {
+        this.speed = speed;
+    }
+
+    public void setSpeed(float speedX, float speedY) {
+        this.speed.set(speedX, speedY);
+    }
+
+    public void setSpeedX(float speedX) {
+        this.speed.x = speedX;
+    }
+
+    public void setSpeedY(float speedY) {
+        this.speed.y = speedY;
+    }
+
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public void setBounds(Rectangle bounds) {
+        this.bounds = bounds;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+
+    public Constants.CollisionFlags getEntityIsA() {
+        return entityIsA;
+    }
+
+    public void setEntityIsA(Constants.CollisionFlags entityIsA) {
+        this.entityIsA = entityIsA;
+    }
+
+    public EnumSet<Constants.CollisionFlags> getEntityCollidesWith() {
+        return entityCollidesWith;
+    }
+
+    public void setEntityCollidesWith(EnumSet<Constants.CollisionFlags> entityCollidesWith) {
+        this.entityCollidesWith = entityCollidesWith;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
+    }
+
+    public boolean isTouched() {
+        return isTouched;
+    }
+
+    public void setTouched(boolean touched) {
+        isTouched = touched;
+    }
+
+    public void setAirState(Constants.airStates airState) {
+        this.airState = airState;
+    }
+
     public Constants.airStates getAirState() {
         return this.airState;
     }

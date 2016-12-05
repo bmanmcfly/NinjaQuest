@@ -8,6 +8,10 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ninja.quest.Utils.MapParser;
+import com.ninja.quest.Utils.Tweeners.WalkerAccessor;
+
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenManager;
 
 /**
  * Created by Bman on 8/14/2016.
@@ -34,7 +38,7 @@ public class World {
     private Array<Ground> walkPath = new Array<Ground>();
     private Array<Ladder> ladders = new Array<Ladder>();
     private Player player;
-
+    private TweenManager tweenManager;
     private MapParser mp;
 
     public World(MapParser parser){
@@ -42,7 +46,7 @@ public class World {
     }
 
     public void init(SpriteBatch batch, TextureAtlas atlas){
-
+        tweenManager = new TweenManager();
         terrainPoly = mp.collisionPolys(this);
         for (BaseEntity e: terrainPoly){
 //            Gdx.app.log("Terrain added", "");
@@ -59,6 +63,8 @@ public class World {
         Polygon polygon = mp.buildHero(position);
         player = new Player(batch, atlas, position, polygon, this);
         entityArray.add(player);
+
+        Tween.registerAccessor(WalkerAccessor.class, new WalkerAccessor());
     }
 
     public void add(BaseEntity entity){
@@ -67,6 +73,7 @@ public class World {
 
     public void update(float delta){
         // TODO: 11/9/2016 get the world to update all entities that have update methods
+        tweenManager.update(delta);
         for (BaseEntity b: entityArray){
             switch (b.entityIsA){
                 case PLAYER:

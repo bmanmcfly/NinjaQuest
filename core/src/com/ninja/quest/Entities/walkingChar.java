@@ -36,6 +36,10 @@ public abstract class walkingChar extends BaseEntity {
     protected Constants.airStates airState, prevAirState;
     protected Constants.states state, prevState;
 
+    public void setWalkPath(Array<Vector2> walkPath) {
+        this.walkPath = walkPath;
+    }
+
     //Sensor points
     protected Vector2 head = new Vector2();
     protected Vector2 foot = new Vector2();
@@ -242,5 +246,131 @@ public abstract class walkingChar extends BaseEntity {
 
     public Vector2 getFoot() {
         return foot;
+    }
+
+    public void setLineIndex(int lineIndex) {
+        this.lineIndex = lineIndex;
+    }
+
+    public void setLineEndIndex(int lineEndIndex) {
+        this.lineEndIndex = lineEndIndex;
+    }
+
+    public void setLineStart(Vector2 lineStart) {
+        this.lineStart = lineStart;
+    }
+
+    public void setLineEnd(Vector2 lineEnd) {
+        this.lineEnd = lineEnd;
+    }
+
+    public void setGroundStart(Vector2 groundStart) {
+        this.groundStart = groundStart;
+    }
+
+    public void setGroundEnd(Vector2 groundEnd) {
+        this.groundEnd = groundEnd;
+    }
+
+    public Vector2 getNearestPoint() {
+        return nearestPoint;
+    }
+
+    public void setNearestPoint(Vector2 nearestPoint) {
+        this.nearestPoint = nearestPoint;
+    }
+
+    public void setGround(Array<Ground> ground) {
+        this.ground = ground;
+    }
+
+    public Array<Vector2> getSections() {
+        return sections;
+    }
+
+    public void setSections(Array<Vector2> sections) {
+        this.sections = sections;
+    }
+
+    @Override
+    public Constants.airStates getAirState() {
+        return airState;
+    }
+
+    @Override
+    public void setAirState(Constants.airStates airState) {
+        this.airState = airState;
+    }
+
+    public Constants.airStates getPrevAirState() {
+        return prevAirState;
+    }
+
+    public void setPrevAirState(Constants.airStates prevAirState) {
+        this.prevAirState = prevAirState;
+    }
+
+    public Constants.states getState() {
+        return state;
+    }
+
+    public void setState(Constants.states state) {
+        this.state = state;
+    }
+
+    public Constants.states getPrevState() {
+        return prevState;
+    }
+
+    public void setPrevState(Constants.states prevState) {
+        this.prevState = prevState;
+    }
+
+    public Vector2 getHead() {
+        return head;
+    }
+
+    public void setHead(Vector2 head) {
+        this.head = head;
+    }
+
+    public void setFoot(Vector2 foot) {
+        this.foot = foot;
+    }
+
+    public Vector2 getrHand() {
+        return rHand;
+    }
+
+    public void setrHand(Vector2 rHand) {
+        this.rHand = rHand;
+    }
+
+    public Vector2 getlHand() {
+        return lHand;
+    }
+
+    public void setlHand(Vector2 lHand) {
+        this.lHand = lHand;
+    }
+
+    public Vector2 getBotRight() {
+        return botRight;
+    }
+
+    public void setBotRight(Vector2 botRight) {
+        this.botRight = botRight;
+    }
+
+    public void setFacingRight(boolean facingRight) {
+        this.facingRight = facingRight;
+    }
+
+    public float getJumpHeight() {
+        return jumpHeight;
+    }
+
+    public void setJumpHeight(float jumpHeight) {
+        this.jumpHeight = jumpHeight;
     }
 }
