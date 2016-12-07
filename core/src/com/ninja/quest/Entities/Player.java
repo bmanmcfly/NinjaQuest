@@ -189,9 +189,9 @@ public class Player extends walkingChar implements Disposable {
                 if (speed.y < -Constants.MAX_FALL_SPEED)
                     speed.y = -Constants.gravity * dt;
             case GLIDING:
-                if (speed.y < -Constants.MAX_FALL_SPEED / 4){
-
-                }
+				/**When the glide starts, slow down to about half the speed, and then accelerate at half gravity to max fall speed / 4
+                * this should give a deliberate and obvious impact to the potential jump distance
+				
                 /** Horizontal motion */
                 //DONE: fix the algorithm here
                 //this is airborn, when facing the direction moving (facingright and dirx > 0 or opposite) then it will be the normal accelleration
@@ -241,7 +241,7 @@ public class Player extends walkingChar implements Disposable {
                     }
                 }
                 if (dirX == 0 || (dirX > 0 && speed.x < 0) || (dirX < 0 && speed.x > 0
-                    || attack || shooting ) ){
+                    || state == Constants.states.ATTACK || state == Constants.states.THROW ) ){
                     speed.scl(Constants.SLOW_DAMPING);
                 }
                 if (jumping){
