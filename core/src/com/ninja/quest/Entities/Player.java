@@ -1,3 +1,4 @@
+
 package com.ninja.quest.Entities;
 
 import com.badlogic.gdx.Gdx;
@@ -33,11 +34,19 @@ public class Player extends walkingChar implements Disposable {
     private Vector2 deltaPos = new Vector2();
     private float dirX = 0;
     private float dirY = 0;
-    private float idleTimer;
     private int frameCount = 0;
-    //Controls
+	
+	//Timers ///////////////////////////
+    private float idleTimer = 0f;
+	private float atkTimer = 0f;
+	private float throwTimer = 0f;
+	
+	
+    //Control flags ////////////////////
     private boolean moveLeft = false, moveRight = false, jumping = false, gliding = false;
     private boolean canClimb = false, climbing = false, attack = false, shooting = false;
+	
+	
     Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape, World world) {
         super(shape, initPos, world);
 //        sb = batch;
@@ -142,16 +151,36 @@ public class Player extends walkingChar implements Disposable {
                 idleTimer = 0;
             }
         }
-        if (attack) {
+        if (state == Constants.states.ATTACK) {
             //todo: start an attack timer to know when to end the attack
             // something like if attack and state = attacking and attack timer less than attack time
-            state = Constants.states.ATTACK;
-        }
+            if (atkTimer <= 1) { //determine an appropriate length of time for the attack to continue
+				//update the sword object, the update will ensure that the sword is updated to the player
+				//position
+			} else {
+				//The timer is complete and now the sword object can be destroyed
+			}
+        } else {
+			if (attack && state != Constants.states.THROW || state != Constants.states.HIT
+				|| state != Constants.states.CLIMB && state != Constants.states.ATTACK) {
+				state = Constants.states.ATTACK;
+				atkTimer = 0f;
+				//TODO: create the sword here
+			}
+		}
 
-        if (shooting) {
+        if (state == Constants.states.THROW) {
             //todo: have a throw timer
+			/** 
+			*
+			* This will more or less be a mirror of the way that the sword is handled, except that the 
+			* projectiles will be taken from and returned to a pool
+			*
+			**/
             state = Constants.states.THROW;
-        }
+        } else {
+			if (shooting && 
+		}
 
         return state;
     }
