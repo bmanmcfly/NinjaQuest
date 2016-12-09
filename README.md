@@ -22,4 +22,13 @@ Logic Flow :
   - Ladder: When the player is colliding with the ladder, can enter a climbing state, while in the climbing state the player can climb through terrain if the ladder is over.  This will need to be done either through the use of flags to determine if the player should go through the ladder terrain, or, by having the terrain split but have the ground line cross the gap so that there's no confusion.  Will need to determine which approach is easiest and less likely to cause grief.
       
       There's more to add...
-    - Seeing how easily I can integrate the TweenEngine into the controls of the player.
+	  
+    - /*Cancel this one... Tweening will be useful when controls are blocked from the player to control the flow, or special effects like fading level transitions*/
+			
+	The player can now walk around, move along the terrain like waypoints, jump, turn left / right
+	TODO: 	- Add climbing
+			- Attack with a sword
+			- Throw a projectile
+			- Have gliding work to slow fall
+	
+	Next step after is to figure out how levels will begin and end... either by reaching a checkpoint, or in the cases of bosses ensure that the boss is dead to end the levels
