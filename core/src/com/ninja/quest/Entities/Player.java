@@ -1,4 +1,3 @@
-
 package com.ninja.quest.Entities;
 
 import com.badlogic.gdx.Gdx;
@@ -151,20 +150,26 @@ public class Player extends walkingChar implements Disposable {
                 idleTimer = 0;
             }
         }
+		
+		//UNTESTED//////////////////////
         if (state == Constants.states.ATTACK) {
             //todo: start an attack timer to know when to end the attack
             // something like if attack and state = attacking and attack timer less than attack time
             if (atkTimer <= 1) { //determine an appropriate length of time for the attack to continue
 				//update the sword object, the update will ensure that the sword is updated to the player
 				//position
+				Gdx.app.log("Attacking", "Now");
+				atkTimer += dt;
 			} else {
 				//The timer is complete and now the sword object can be destroyed
+				Gdx.app.log("Attacking", "Ends now");
 			}
         } else {
 			if (attack && state != Constants.states.THROW || state != Constants.states.HIT
-				|| state != Constants.states.CLIMB && state != Constants.states.ATTACK) {
+				|| state != Constants.states.CLIMB) {
 				state = Constants.states.ATTACK;
 				atkTimer = 0f;
+				Gdx.app.log("State change: Attacking", "Now");
 				//TODO: create the sword here
 			}
 		}
@@ -177,10 +182,23 @@ public class Player extends walkingChar implements Disposable {
 			* projectiles will be taken from and returned to a pool
 			*
 			**/
-            state = Constants.states.THROW;
+			if (throwTimer <= 1) {
+					//Continue with the throw animation / creating the projectiles
+					Gdx.app.log("Throwing", "Now");
+					throwTimer += dt;
+			} else {
+				// end the throwing animation and return to a more appropriate state
+				Gdx.app.log("Throwing", "Ending Now");
+			}
+           
         } else {
-			if (shooting && 
+			if (shooting && state != Constants.states.ATTACK || state != Constants.states.HIT 
+				|| state != Constants.states.CLIMB)
+				state = Constants.states.THROW;
+				throwTimer = 0f;
+				Gdx.app.log("State change: Throwing", "Now");
 		}
+		//END UNTESTED//////////////////////
 
         return state;
     }
@@ -377,3 +395,4 @@ public class Player extends walkingChar implements Disposable {
 //
 //    }
 }
+
