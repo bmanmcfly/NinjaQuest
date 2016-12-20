@@ -152,7 +152,7 @@ public class MapParser{
 
     public Polygon buildHero(Vector2 position){
         Polygon polygon = new Polygon();
-        float[] verts = {Constants.PLAYER_WIDTH * (0.25f), 0, Constants.PLAYER_WIDTH * (0.75f), 0,
+        float[] verts = {Constants.PLAYER_WIDTH * (0.5f), 0,
                         Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT * (3f/8f),
                         Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT * (5f/8f),
                         Constants.PLAYER_WIDTH * (5f/8f), Constants.PLAYER_HEIGHT,

@@ -34,18 +34,19 @@ public class Player extends walkingChar implements Disposable {
     private float dirX = 0;
     private float dirY = 0;
     private int frameCount = 0;
-	
+
 	//Timers ///////////////////////////
     private float idleTimer = 0f;
 	private float atkTimer = 0f;
 	private float throwTimer = 0f;
-	
-	
+
+
     //Control flags ////////////////////
     private boolean moveLeft = false, moveRight = false, jumping = false, gliding = false;
-    private boolean canClimb = false, climbing = false, attack = false, shooting = false;
-	
-	
+    private boolean canClimb = false, climbUp = false, attack = false, shooting = false;
+    private boolean startGlide = false;
+
+
     Player(SpriteBatch batch, TextureAtlas atlas, Vector2 initPos, Polygon shape, World world) {
         super(shape, initPos, world);
 //        sb = batch;
@@ -64,11 +65,11 @@ public class Player extends walkingChar implements Disposable {
 //        image.setPosition(initPos.x, initPos.y);
 //        image.setBounds(initPos.x, initPos.y, Constants.PixPerTile * 1.1f, Constants.PixPerTile * 1.8f);
 
-    void updateInput(){
+    private void updateInput() {
         moveLeft = Input.left;// && !blockLeft;
         moveRight = Input.right;// && !blockRight;
-        jumping = Input.jump;// && !blockHead;
-        gliding = Input.climbDown;// && airState == FALLING;
+        jumping = Input.jump; // && !blockHead;
+//        gliding = Input.jump && speed.y < 0 && airState != Constants.airStates.GROUNDED;// && airState == FALLING;
 //        climbing = Input.climbUp;
 //        climbing = Input.climbDown;
         attack = Input.attack;
@@ -117,6 +118,7 @@ public class Player extends walkingChar implements Disposable {
                 if (gliding){
                     //start gliding
                     airState = Constants.airStates.GLIDING;
+                    startGlide = true;
                 }
 //                Gdx.app.log("airstate", "Falling");
             }
@@ -130,12 +132,20 @@ public class Player extends walkingChar implements Disposable {
     private Constants.states updateState(float dt){
         /** States:
          *  CLIMB : If in collision with a ladder and presses climb up or climb down
+         *      prevents: attack, throw, walk
+         *      prevented by: throw, attack, slide?
          *  THROW : Slows to stop creates and projectiles, breaks jump / glide to falling
+         *      prevents: attack, climb, slide
+         *      prevented by: attack, climb, ends slide
          *  ATTACK : if grounded slow to a stop, create sword on side facing, breaks jump / glide to falling
+         *      prevents: throw, climb, slide
+         *      prevented by: throw, climb, stops slide
          *  IDLE : 2 seconds or so of nothing
          *  WALKING ; Done --  can jump, fall, be hit, slide,
          *  SLIDE : walking flat or downhill at half speed or more, can fall, jump, atk and throw
+         *      prevents: climb
          *  HIT : fly backwards a half jump backwards, todo when there are enemies around
+         *      prevents: action until hit motion is complete
          *  DYING : save this for dying animation, lose a life and reload at the previous checkpoint
         */
         if (airState == Constants.airStates.GROUNDED) {
@@ -150,55 +160,8 @@ public class Player extends walkingChar implements Disposable {
                 idleTimer = 0;
             }
         }
-		
-		//UNTESTED//////////////////////
-        if (state == Constants.states.ATTACK) {
-            //todo: start an attack timer to know when to end the attack
-            // something like if attack and state = attacking and attack timer less than attack time
-            if (atkTimer <= 1) { //determine an appropriate length of time for the attack to continue
-				//update the sword object, the update will ensure that the sword is updated to the player
-				//position
-				Gdx.app.log("Attacking", "Now");
-				atkTimer += dt;
-			} else {
-				//The timer is complete and now the sword object can be destroyed
-				Gdx.app.log("Attacking", "Ends now");
-			}
-        } else {
-			if (attack && state != Constants.states.THROW || state != Constants.states.HIT
-				|| state != Constants.states.CLIMB) {
-				state = Constants.states.ATTACK;
-				atkTimer = 0f;
-				Gdx.app.log("State change: Attacking", "Now");
-				//TODO: create the sword here
-			}
-		}
 
-        if (state == Constants.states.THROW) {
-            //todo: have a throw timer
-			/** 
-			*
-			* This will more or less be a mirror of the way that the sword is handled, except that the 
-			* projectiles will be taken from and returned to a pool
-			*
-			**/
-			if (throwTimer <= 1) {
-					//Continue with the throw animation / creating the projectiles
-					Gdx.app.log("Throwing", "Now");
-					throwTimer += dt;
-			} else {
-				// end the throwing animation and return to a more appropriate state
-				Gdx.app.log("Throwing", "Ending Now");
-			}
-           
-        } else {
-			if (shooting && state != Constants.states.ATTACK || state != Constants.states.HIT 
-				|| state != Constants.states.CLIMB)
-				state = Constants.states.THROW;
-				throwTimer = 0f;
-				Gdx.app.log("State change: Throwing", "Now");
-		}
-		//END UNTESTED//////////////////////
+
 
         return state;
     }
@@ -214,7 +177,9 @@ public class Player extends walkingChar implements Disposable {
             if (speed.x > 0 && airState.equals(Constants.airStates.GROUNDED))
                 facingRight = true;
         }
-        if ((moveLeft && moveRight) || (!moveRight && !moveLeft)){
+        if ((moveLeft && moveRight) || (!moveRight && !moveLeft)
+                || (state == Constants.states.THROW && airState == Constants.airStates.GROUNDED)
+                || (state == Constants.states.ATTACK && airState == Constants.airStates.GROUNDED)) {
             dirX = 0;
         }
 //        Gdx.app.log("calc speed", "");
@@ -235,20 +200,25 @@ public class Player extends walkingChar implements Disposable {
                 }
                 if (speed.y < -Constants.MAX_FALL_SPEED)
                     speed.y = -Constants.gravity * dt;
-            case GLIDING:
+//            case GLIDING:
 				/**When the glide starts, slow down to about half the speed, and then accelerate at half gravity to max fall speed / 4
                 * this should give a deliberate and obvious impact to the potential jump distance
-				
+                */
+//
+//                if (startGlide && speed.y < 0){
+//                    speed.y += (Constants.gravity * dt) / 4;
+//
+//                } else {
+//                    speed.y -= (Constants.gravity * dt) / 4;
+//                    startGlide = false;
+//                }
+
                 /** Horizontal motion */
                 //DONE: fix the algorithm here
                 //this is airborn, when facing the direction moving (facingright and dirx > 0 or opposite) then it will be the normal accelleration
                 // when facing right and dirx are opposite each other, limit the speed to half of max and a slower accelleration
                 // don't change the xspeed if attacking, if on the ground and attacking start damping the speed
                 if (dirX != 0) {
-                    /** I planned this one out wrong, if airborn and moving opposite the direction facing,
-                     * then cap the run speed to max run speed / 2.
-                     * Otherwise, if running in the direction facing, use normal acceleration.
-                      */
                     //dirx is positive, right motion, and less than the max speed or
                     //
                     if (dirX > 0 && speed.x > 0 && facingRight
@@ -259,6 +229,7 @@ public class Player extends walkingChar implements Disposable {
                             speed.x += dirX * 3 * dt;
                         } else {
 //                            Gdx.app.log("max speed with direction","");
+
                             speed.x = dirX * Constants.MAX_RUN_SPEED;
 
                         }
@@ -395,4 +366,3 @@ public class Player extends walkingChar implements Disposable {
 //
 //    }
 }
-
